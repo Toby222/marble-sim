@@ -47,7 +47,10 @@ export default class MarbleSim extends React.Component<
       },
     });
 
-    const polygon = Bodies.polygon(900, 200, 100, 80);
+    const polygon = Bodies.polygon(900, 200, 100, 80, {
+      restitution: 1,
+      frictionAir: 0,
+    });
     const ground = Bodies.rectangle(900, 610, 810, 60, {
       isStatic: true,
     });
