@@ -1,69 +1,87 @@
-import React, { useRef } from "react";
+import React from "react";
 
-import Matter, {
+import {
   Engine,
   Render,
   World,
   Bodies,
   Mouse,
   MouseConstraint,
+  Body,
 } from "matter-js";
+import { Marble } from "../lib/Marble";
 
-interface Props {
-  _: null;
-}
-
-interface State {
-  _: null;
-}
-
-export class Scene extends React.Component<Props, State> {
+export class MatterScene extends React.Component<any, any> {
   canvas: React.RefObject<HTMLCanvasElement>;
+  engine: Engine = Engine.create();
+
+  bodies: Map<string, Body> = new Map();
+
   constructor(props) {
     super(props);
     this.canvas = React.createRef<HTMLCanvasElement>();
   }
 
   componentDidMount() {
-    const engine = Engine.create();
+    const engine = this.engine;
+
     const render = Render.create({
       canvas: this.canvas.current,
       engine: engine,
       options: {
         width: window.innerWidth,
-        height: window.innerHeight,
+        height: window.innerHeight - 50,
         wireframes: false,
       },
     });
 
-    const ballA = Bodies.circle(210, 100, 30, { restitution: 0.8 });
-    const ballB = Bodies.circle(110, 130, 30, { restitution: 0.8 });
+    new Marble(engine.world, 210, 100, 30, { restitution: 1, friction: 0, frictionStatic: 0, frictionAir: 0 });
+    new Marble(engine.world, 110, 130, 30, { restitution: 1, friction: 0, frictionStatic: 0, frictionAir: 0 });
 
-    World.add(engine.world, [
-      // walls
-      Bodies.rectangle(window.innerWidth / 2, 0, window.innerWidth + 10, 50, {
-        isStatic: true,
-      }),
-      Bodies.rectangle(
-        window.innerWidth / 2,
-        window.innerHeight,
-        window.innerWidth + 10,
-        50,
-        { isStatic: true }
-      ),
-      Bodies.rectangle(0, window.innerHeight / 2, 50, window.innerHeight + 10, {
-        isStatic: true,
-      }),
-      Bodies.rectangle(
-        window.innerWidth,
-        window.innerHeight / 2,
-        50,
-        window.innerHeight + 10,
-        { isStatic: true }
-      ),
-    ]);
+    const canvas = this.canvas.current;
 
-    World.add(engine.world, [ballA, ballB]);
+    // walls
+    const wallTop = Bodies.rectangle(
+      canvas.width / 2,
+      0,
+      canvas.width + 10,
+      50,
+      {
+        isStatic: true,
+      }
+    );
+    const wallBottom = Bodies.rectangle(
+      canvas.width / 2,
+      canvas.height,
+      canvas.width + 10,
+      50,
+      {
+        isStatic: true,
+      }
+    );
+    const wallLeft = Bodies.rectangle(
+      0,
+      canvas.height / 2,
+      50,
+      canvas.height + 10,
+      {
+        isStatic: true,
+      }
+    );
+    const wallRight = Bodies.rectangle(
+      canvas.width,
+      canvas.height / 2,
+      50,
+      canvas.height + 10,
+      { isStatic: true }
+    );
+
+    this.bodies.set("wallTop", wallTop);
+    this.bodies.set("wallBottom", wallBottom);
+    this.bodies.set("wallLeft", wallLeft);
+    this.bodies.set("wallRight", wallRight);
+
+    World.add(engine.world, [wallTop, wallBottom, wallLeft, wallRight]);
 
     const mouse = Mouse.create(render.canvas);
     const mouseConstraint = MouseConstraint.create(engine, { mouse });
@@ -83,8 +101,10 @@ export class Scene extends React.Component<Props, State> {
 
     window.addEventListener("resize", () => {
       this.canvas.current.width = window.innerWidth;
-      this.canvas.current.height = window.innerHeight;
-    })
+      this.canvas.current.height = window.innerHeight - 50;
+    });
+
+    this.setState({ engine, render });
   }
 
   render() {

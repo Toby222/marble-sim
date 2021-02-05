@@ -3,7 +3,7 @@ import React from "react";
 import decomp from "poly-decomp";
 
 import Head from "next/head";
-import { Scene } from "../components/Scene";
+import { MatterScene } from "../components/Scene";
 
 export default class MarbleSim extends React.Component {
   render() {
@@ -12,7 +12,10 @@ export default class MarbleSim extends React.Component {
         <Head>
           <title>Marbles 4 Catgirls</title>
         </Head>
-        <Scene />
+        <>
+          <div id="toolbar">Test</div>
+          <MatterScene />
+        </>
       </>
     );
   }
