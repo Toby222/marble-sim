@@ -1,110 +1,52 @@
 import React from "react";
 
-import {
-  Engine,
-  Render,
-  World,
-  Bodies,
-  Mouse,
-  MouseConstraint,
-  Body,
-} from "matter-js";
-import { Marble } from "../lib/Marble";
+import planck from "planck-js";
+import { CanvasRenderer } from "../lib/renderer";
+import { Runner } from "../lib/runner";
 
-export class MatterScene extends React.Component<any, any> {
+export class Scene extends React.Component<Record<string, never>> {
   canvas: React.RefObject<HTMLCanvasElement>;
-  engine: Engine = Engine.create();
-
-  bodies: Map<string, Body> = new Map();
+  world: planck.World;
 
   constructor(props) {
     super(props);
-    this.canvas = React.createRef<HTMLCanvasElement>();
+    this.world = new planck.World();
+    const groundBody = this.world.createBody({
+      position: new planck.Vec2(0, -10),
+    });
+    const groundBox = new planck.Box(50, 10);
+    groundBody.createFixture(groundBox);
+
+    const body = this.world.createBody({
+      type: "dynamic",
+      position: new planck.Vec2(0, 4),
+    });
+
+    const dynamicBox = new planck.Box(1, 1);
+    body.createFixture({
+      shape: dynamicBox,
+      density: 1,
+      friction: 0.3,
+    });
+
+    this.canvas = React.createRef();
   }
 
   componentDidMount() {
-    const engine = this.engine;
+    const context = this.canvas.current.getContext("2d");
 
-    const render = Render.create({
-      canvas: this.canvas.current,
-      engine: engine,
-      options: {
-        width: window.innerWidth,
-        height: window.innerHeight - 50,
-        wireframes: false,
-      },
-    });
+    const renderer = new CanvasRenderer(this.world, context);
+    const runner = new Runner(this.world, { fps: 30 });
 
-    new Marble(engine.world, 210, 100, 30, { restitution: 1, friction: 0, frictionStatic: 0, frictionAir: 0 });
-    new Marble(engine.world, 110, 130, 30, { restitution: 1, friction: 0, frictionStatic: 0, frictionAir: 0 });
-
-    const canvas = this.canvas.current;
-
-    // walls
-    const wallTop = Bodies.rectangle(
-      canvas.width / 2,
-      0,
-      canvas.width + 10,
-      50,
-      {
-        isStatic: true,
-      }
-    );
-    const wallBottom = Bodies.rectangle(
-      canvas.width / 2,
-      canvas.height,
-      canvas.width + 10,
-      50,
-      {
-        isStatic: true,
-      }
-    );
-    const wallLeft = Bodies.rectangle(
-      0,
-      canvas.height / 2,
-      50,
-      canvas.height + 10,
-      {
-        isStatic: true,
-      }
-    );
-    const wallRight = Bodies.rectangle(
-      canvas.width,
-      canvas.height / 2,
-      50,
-      canvas.height + 10,
-      { isStatic: true }
-    );
-
-    this.bodies.set("wallTop", wallTop);
-    this.bodies.set("wallBottom", wallBottom);
-    this.bodies.set("wallLeft", wallLeft);
-    this.bodies.set("wallRight", wallRight);
-
-    World.add(engine.world, [wallTop, wallBottom, wallLeft, wallRight]);
-
-    const mouse = Mouse.create(render.canvas);
-    const mouseConstraint = MouseConstraint.create(engine, { mouse });
-    mouseConstraint.constraint.stiffness = 0.2;
-    mouseConstraint.constraint.render.visible = false;
-
-    World.add(engine.world, mouseConstraint);
-
-    /*
-    Matter.Events.on(mouseConstraint, "mousedown", (_event) => {
-      World.add(engine.world, Bodies.circle(150, 50, 30, { restitution: 0.9 }));
-    });
-    */
-
-    Engine.run(engine);
-    Render.run(render);
-
-    window.addEventListener("resize", () => {
+    const handleResize = () => {
       this.canvas.current.width = window.innerWidth;
       this.canvas.current.height = window.innerHeight - 50;
-    });
+    };
 
-    this.setState({ engine, render });
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    runner.start(() => renderer.renderWorld());
   }
 
   render() {

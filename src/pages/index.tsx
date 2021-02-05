@@ -1,9 +1,7 @@
 import React from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import decomp from "poly-decomp";
 
 import Head from "next/head";
-import { MatterScene } from "../components/Scene";
+import { Scene } from "../components/Scene";
 
 export default class MarbleSim extends React.Component {
   render() {
@@ -14,7 +12,7 @@ export default class MarbleSim extends React.Component {
         </Head>
         <>
           <div id="toolbar">Test</div>
-          <MatterScene />
+          <Scene />
         </>
       </>
     );
