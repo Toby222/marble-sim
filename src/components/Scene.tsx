@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FormEvent } from "react";
 
 import planck from "planck-js";
 import { CanvasRenderer as Renderer } from "../lib/renderer";
@@ -9,43 +9,50 @@ type Props = Record<string, never>;
 export class Scene extends React.Component<Props> {
   canvas: React.RefObject<HTMLCanvasElement>;
   toolbar: React.RefObject<HTMLDivElement>;
+  fpsCounter: React.RefObject<HTMLSpanElement>;
+
   world: planck.World;
+  renderer: Renderer;
+  runner: Runner;
+
+  edge: planck.Body;
 
   constructor(props: Props) {
     super(props);
     this.world = new planck.World();
     this.world.setGravity(new planck.Vec2(0, 10));
 
-    const groundBody = this.world.createBody({
-      position: new planck.Vec2(0, 50),
-      angle: 0.02 * Math.PI,
-    });
-    const groundBox = new planck.Box(100, 10);
-    groundBody.createFixture(groundBox);
-
-    const body = this.world.createBody({
-      type: "dynamic",
-      position: new planck.Vec2(0, 4),
-    });
-
-    const dynamicBox = new planck.Circle(planck.Vec2(), 4);
-    body.createFixture({
-      shape: dynamicBox,
-      density: 100,
-    });
-
     this.canvas = React.createRef();
     this.toolbar = React.createRef();
+    this.fpsCounter = React.createRef();
   }
 
   componentDidMount() {
     const context = this.canvas.current.getContext("2d");
+    this.handleResize();
 
-    const renderer = new Renderer(this.world, context, { scale: 1 });
-    const runner = new Runner(this.world, { fps: 30 });
+    const corners = [
+      planck.Vec2(0, 0), // NW
+      planck.Vec2(0, this.canvas.current.clientHeight), // SW
+      planck.Vec2(this.canvas.current.clientWidth, 0), // NE
+      planck.Vec2(
+        this.canvas.current.clientWidth,
+        this.canvas.current.clientHeight
+      ), // SE
+    ];
+
+    const edge = this.world.createBody();
+    edge.createFixture(planck.Edge(corners[0], corners[1])); // W
+    edge.createFixture(planck.Edge(corners[1], corners[3])); // S
+    edge.createFixture(planck.Edge(corners[2], corners[3])); // E
+    edge.createFixture(planck.Edge(corners[0], corners[2])); // N
+    edge.render = { hidden: true };
+    this.edge = edge;
+
+    this.renderer = new Renderer(this.world, context, { scale: 1 });
+    this.runner = new Runner(this.world, { fps: 30, speed: 30 });
 
     window.addEventListener("resize", () => this.handleResize());
-    this.handleResize();
 
     this.canvas.current.addEventListener("click", (event: MouseEvent) => {
       this.world
@@ -54,14 +61,21 @@ export class Scene extends React.Component<Props> {
           position: this.getCursorPositionInCanvas(event),
         })
         .createFixture({
-          shape: new planck.Circle(planck.Vec2(), 3),
-          density: 100,
+          shape: new planck.Circle(planck.Vec2(), 20),
+          restitution: 1,
+          friction: 0,
         });
     });
 
-    runner.options.speed = 5;
-    runner.start(() => renderer.renderWorld());
+    this.runner.start(() => {
+      this.renderer.renderWorld();
+      if (this.fpsCounter.current)
+        this.fpsCounter.current.innerText = `FPS: ${Math.round(
+          this.runner.fps
+        )}; Bodies: ${this.world.getBodyCount()}`;
+    });
   }
+
   getCursorPositionInCanvas(event: MouseEvent) {
     const rect = this.canvas.current.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -81,12 +95,37 @@ export class Scene extends React.Component<Props> {
     return (
       <>
         <div id="toolbar" ref={this.toolbar}>
+          <span ref={this.fpsCounter} />
           <label htmlFor="tools">Select a tool</label>
-          <select name="tools" id="tools">
+          <label htmlFor="change-speed">test</label>
+
+          <select name="tools">
             <option>Marble</option>
           </select>
+
+          <input
+            name="change-speed"
+            type="range"
+            min={0}
+            max={100}
+            defaultValue={30}
+            onInput={(event: FormEvent<HTMLInputElement>) => {
+              const value = (event.target as HTMLInputElement).valueAsNumber;
+              this.runner.options.speed = value;
+            }}
+          />
+          <input
+            type="checkbox"
+            defaultChecked={true}
+            onInput={(event: FormEvent<HTMLInputElement>) => {
+              const value = (event.target as HTMLInputElement).checked;
+              if (value) {
+
+              }
+            }}
+          />
         </div>
-        <canvas id="marble-sim" ref={this.canvas}></canvas>
+        <canvas id="marble-sim" ref={this.canvas} />
       </>
     );
   }

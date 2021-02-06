@@ -9,6 +9,8 @@ export class Runner {
   fps: number;
   runId?: number;
 
+  private _slomo: number;
+
   render?: () => void;
   update?: (step: number) => void;
 
@@ -36,9 +38,6 @@ export class Runner {
       this.update = update;
     }
 
-    const step = 1 / this.options.fps;
-    const slomo = 1 / this.options.speed;
-    const slowStep = slomo * step;
     let last = performance.now();
     let dt = 0;
     let now: number;
@@ -46,16 +45,18 @@ export class Runner {
 
     const tick = () => {
       now = performance.now();
-      dt = dt + Math.min(1, (now - last) / 1000);
-      while (dt > slowStep) {
-        this.world.step(step);
-        if (typeof update === "function") {
-          this.update(step);
+      if (this.options.speed > 0) {
+        dt = dt + Math.min(1, (now - last) / 1000);
+        while (dt > this.slowStep) {
+          this.world.step(this.step);
+          if (typeof update === "function") {
+            this.update(this.step);
+          }
+          dt -= this.slowStep;
         }
-        dt -= slowStep;
+        delta = (now - last) / 1000;
+        this.fps = 1 / delta;
       }
-      delta = (now - last) / 1000;
-      this.fps = 1 / delta;
       last = now;
 
       this.render?.call(this);
@@ -63,6 +64,16 @@ export class Runner {
     };
 
     this.runId = requestAnimationFrame(tick);
+  }
+
+  get step() {
+    return 1 / this.options.fps;
+  }
+  get slomo() {
+    return 1 / this.options.speed;
+  }
+  get slowStep() {
+    return this.slomo * this.step;
   }
 
   stop() {
