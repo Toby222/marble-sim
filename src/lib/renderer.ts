@@ -18,7 +18,10 @@ declare module "planck-js" {
       custom?: (
         ctx: CanvasRenderingContext2D,
         pos: planck.Vec2,
-        size: number
+        size: {
+          width: number;
+          height: number;
+        }
       ) => boolean | undefined;
       hidden?: boolean;
     };
@@ -99,16 +102,16 @@ export class CanvasRenderer {
 
         switch (type) {
           case "circle":
-            this.drawCircle(body, shape);
+            this.drawCircle(body, shape as planck.Circle);
             break;
           case "edge":
-            this.drawEdge(body, shape);
+            this.drawEdge(body, shape as planck.Edge);
             break;
           case "polygon":
-            this.drawPolygon(body, shape);
+            this.drawPolygon(body, shape as planck.Polygon);
             break;
           case "chain":
-            this.drawPolygon(body, shape);
+            this.drawPolygon(body, shape as planck.Chain);
             break;
         }
 
@@ -128,11 +131,11 @@ export class CanvasRenderer {
     }
   }
 
-  drawCircle(body, shape) {
+  drawCircle(body: planck.Body, shape: planck.Circle) {
     const ctx = this.ctx;
     const lw = this.options.lineWidth;
 
-    const radius = shape.m_radius;
+    const radius = shape.getRadius();
     const pos = body.getPosition();
     const angle = body.getAngle();
 
@@ -142,12 +145,14 @@ export class CanvasRenderer {
     ctx.rotate(angle);
 
     if (body.render && body.render.custom) {
-      const pos = {
-        x: -radius - lw * 2,
-        y: -radius - lw * 2,
-      };
+      const pos = planck.Vec2(-radius - lw * 2, -radius - lw * 2);
 
-      if (body.render.custom(ctx, pos, size + lw) !== true) {
+      if (
+        body.render.custom(ctx, pos, {
+          width: size + lw,
+          height: size + lw,
+        }) !== true
+      ) {
         return;
       }
     }
@@ -159,7 +164,7 @@ export class CanvasRenderer {
     ctx.restore();
   }
 
-  drawEdge(body, shape) {
+  drawEdge(_body: planck.Body, shape: planck.Edge) {
     const ctx = this.ctx;
 
     const v1 = shape.m_vertex1;
@@ -172,7 +177,7 @@ export class CanvasRenderer {
     ctx.stroke();
   }
 
-  drawPolygon(body, shape) {
+  drawPolygon(body: planck.Body, shape: planck.Polygon | planck.Chain) {
     const ctx = this.ctx;
     const lw = this.options.lineWidth;
 
@@ -206,10 +211,7 @@ export class CanvasRenderer {
         width: width + lw,
         height: height + lw,
       };
-      const pos = {
-        x: minX - lw,
-        y: minY - lw,
-      };
+      const pos = planck.Vec2(minX - lw, minY - lw);
 
       if (body.render.custom(ctx, pos, size) !== true) {
         return;
@@ -235,7 +237,7 @@ export class CanvasRenderer {
     ctx.stroke();
   }
 
-  drawJoint(joint) {
+  drawJoint(joint: planck.Joint) {
     const ctx = this.ctx;
 
     const a = joint.getAnchorA();
