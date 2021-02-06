@@ -6,6 +6,10 @@ import { Runner } from "../lib/runner";
 
 type Props = Record<string, never>;
 
+interface UserData {
+  markedForDeletion: boolean;
+}
+
 export class Scene extends React.Component<Props> {
   canvas: React.RefObject<HTMLCanvasElement>;
   toolbar: React.RefObject<HTMLDivElement>;
@@ -51,12 +55,36 @@ export class Scene extends React.Component<Props> {
     ];
 
     const edge = this.world.createBody();
-    edge.createFixture(planck.Edge(corners[0], corners[1])); // W
-    edge.createFixture(planck.Edge(corners[1], corners[3])); // S
-    edge.createFixture(planck.Edge(corners[2], corners[3])); // E
-    edge.createFixture(planck.Edge(corners[0], corners[2])); // N
+    const edgeFixtures = [
+      edge.createFixture(planck.Edge(corners[0], corners[1])), // W
+      edge.createFixture(planck.Edge(corners[1], corners[3])), // S
+      edge.createFixture(planck.Edge(corners[2], corners[3])), // E
+      edge.createFixture(planck.Edge(corners[0], corners[2])), // N
+    ];
     edge.render = { hidden: true };
     this.edges = edge;
+
+    this.world.on("begin-contact", (contact: planck.Contact) => {
+      if (
+        edgeFixtures.includes(contact.getFixtureA()) &&
+        contact.getFixtureA().isSensor()
+      ) {
+        contact
+          .getFixtureB()
+          .getBody()
+          .setUserData({ markedForDeletion: true });
+      }
+
+      if (
+        edgeFixtures.includes(contact.getFixtureB()) &&
+        contact.getFixtureB().isSensor()
+      ) {
+        contact
+          .getFixtureA()
+          .getBody()
+          .setUserData({ markedForDeletion: true });
+      }
+    });
 
     this.renderer = new Renderer(this.world, context, { scale: 1 });
     this.runner = new Runner(this.world, { fps: 30, speed: 30 });
@@ -76,13 +104,23 @@ export class Scene extends React.Component<Props> {
         });
     });
 
-    this.runner.start(() => {
+    const render = () => {
       this.renderer.renderWorld();
       if (this.fpsCounter.current)
         this.fpsCounter.current.innerText = `FPS: ${Math.round(
           this.runner.fps
         )}; Bodies: ${this.world.getBodyCount()}`;
-    });
+    };
+
+    const update = () => {
+      for (let body = this.world.getBodyList(); body; body = body.getNext()) {
+        if ((body.getUserData() as UserData)?.markedForDeletion) {
+          this.world.destroyBody(body);
+        }
+      }
+    };
+
+    this.runner.start(render, update);
   }
 
   getCursorPositionInCanvas(event: MouseEvent) {
