@@ -74,11 +74,11 @@ export class CanvasRenderer {
         fixture;
         fixture = fixture.getNext()
       ) {
-        if (body.render && body.render.hidden) {
+        if (body.render?.hidden) {
           continue;
         }
 
-        if (body.render && body.render.stroke) {
+        if (body.render?.stroke) {
           ctx.strokeStyle = body.render.stroke;
         } else if (body.isDynamic()) {
           ctx.strokeStyle = options.strokeStyle.dynamic;
@@ -94,18 +94,22 @@ export class CanvasRenderer {
         ctx.save();
         ctx.scale(this.options.scale, this.options.scale);
         ctx.lineWidth = options.lineWidth;
-        if (type === "circle") {
-          this.drawCircle(body, shape);
+
+        switch (type) {
+          case "circle":
+            this.drawCircle(body, shape);
+            break;
+          case "edge":
+            this.drawEdge(body, shape);
+            break;
+          case "polygon":
+            this.drawPolygon(body, shape);
+            break;
+          case "chain":
+            this.drawPolygon(body, shape);
+            break;
         }
-        if (type === "edge") {
-          this.drawEdge(body, shape);
-        }
-        if (type === "polygon") {
-          this.drawPolygon(body, shape);
-        }
-        if (type === "chain") {
-          this.drawPolygon(body, shape);
-        }
+
         ctx.restore();
       }
     }

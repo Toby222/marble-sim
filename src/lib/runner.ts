@@ -21,16 +21,9 @@ export class Runner {
     this.world = world;
 
     this.fps = 0;
-
-    this.runId = null;
-    this.render = null;
-    this.update = null;
   }
 
-  start(
-    render: false | (() => void) = false,
-    update: false | ((step: number) => void) = false
-  ) {
+  start(render?: () => void, update?: (step: number) => void) {
     if (this.runId) {
       return;
     }
@@ -65,7 +58,7 @@ export class Runner {
       this.fps = 1 / delta;
       last = now;
 
-      this.render();
+      this.render?.call(this);
       this.runId = requestAnimationFrame(tick);
     };
 
