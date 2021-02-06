@@ -19,7 +19,7 @@ export class Scene extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-    this.world = new planck.World(new planck.Vec2(0, -10));
+    this.world = new planck.World();
     this.world.setGravity(new planck.Vec2(0, 10));
 
     this.canvas = React.createRef();
@@ -99,7 +99,7 @@ export class Scene extends React.Component<Props> {
           &nbsp;
           <label htmlFor="tools">Select a tool</label>
           &nbsp;
-          <select name="tools">
+          <select name="tools" >
             <option>Marble</option>
           </select>
           <label htmlFor="change-speed">Adjust speed:</label>
