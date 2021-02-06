@@ -15,11 +15,11 @@ export class Scene extends React.Component<Props> {
   renderer: Renderer;
   runner: Runner;
 
-  edge: planck.Body;
+  edges: planck.Body;
 
   constructor(props: Props) {
     super(props);
-    this.world = new planck.World();
+    this.world = new planck.World(new planck.Vec2(0, -10));
     this.world.setGravity(new planck.Vec2(0, 10));
 
     this.canvas = React.createRef();
@@ -47,7 +47,7 @@ export class Scene extends React.Component<Props> {
     edge.createFixture(planck.Edge(corners[2], corners[3])); // E
     edge.createFixture(planck.Edge(corners[0], corners[2])); // N
     edge.render = { hidden: true };
-    this.edge = edge;
+    this.edges = edge;
 
     this.renderer = new Renderer(this.world, context, { scale: 1 });
     this.runner = new Runner(this.world, { fps: 30, speed: 30 });
@@ -96,13 +96,14 @@ export class Scene extends React.Component<Props> {
       <>
         <div id="toolbar" ref={this.toolbar}>
           <span ref={this.fpsCounter} />
+          &nbsp;
           <label htmlFor="tools">Select a tool</label>
-          <label htmlFor="change-speed">test</label>
-
+          &nbsp;
           <select name="tools">
             <option>Marble</option>
           </select>
-
+          <label htmlFor="change-speed">Adjust speed:</label>
+          &nbsp;
           <input
             name="change-speed"
             type="range"
@@ -118,9 +119,13 @@ export class Scene extends React.Component<Props> {
             type="checkbox"
             defaultChecked={true}
             onInput={(event: FormEvent<HTMLInputElement>) => {
-              const value = (event.target as HTMLInputElement).checked;
-              if (value) {
-
+              const checked = (event.target as HTMLInputElement).checked;
+              for (
+                let edge = this.edges.getFixtureList();
+                edge;
+                edge = edge.getNext()
+              ) {
+                edge.setSensor(!checked);
               }
             }}
           />
