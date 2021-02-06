@@ -27,6 +27,15 @@ export class Scene extends React.Component<Props> {
     this.fpsCounter = React.createRef();
   }
 
+  componentWillUnmount() {
+    this.canvas.current.style.visibility = "none";
+    this.runner.stop();
+    delete this.renderer;
+    delete this.runner;
+    delete this.world;
+    window.removeEventListener("resize", this.handleResize);
+  }
+
   componentDidMount() {
     const context = this.canvas.current.getContext("2d");
     this.handleResize();
