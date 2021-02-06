@@ -1,10 +1,12 @@
+type strokeStyle = CanvasGradient | CanvasPattern | string;
+
 interface RendererOptions {
   scale: number;
   lineWidth: number;
   strokeStyle: {
-    dynamic: string; // SMTH SMTH CSS
-    static: string;
-    kinematic: string;
+    dynamic: strokeStyle;
+    static: strokeStyle;
+    kinematic: strokeStyle;
   };
 }
 
@@ -12,7 +14,7 @@ import planck from "planck-js";
 declare module "planck-js" {
   export interface Body {
     render?: {
-      stroke?: string;
+      stroke?: strokeStyle;
       custom?: (
         ctx: CanvasRenderingContext2D,
         pos: planck.Vec2,
