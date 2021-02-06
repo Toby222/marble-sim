@@ -6,6 +6,7 @@ import { Runner } from "../lib/runner";
 
 export class Scene extends React.Component<Record<string, never>> {
   canvas: React.RefObject<HTMLCanvasElement>;
+  toolbar: React.RefObject<HTMLDivElement>;
   world: planck.World;
 
   constructor(props) {
@@ -30,6 +31,7 @@ export class Scene extends React.Component<Record<string, never>> {
     });
 
     this.canvas = React.createRef();
+    this.toolbar = React.createRef();
   }
 
   componentDidMount() {
@@ -50,6 +52,16 @@ export class Scene extends React.Component<Record<string, never>> {
   }
 
   render() {
-    return <canvas id="marble-sim" ref={this.canvas}></canvas>;
+    return (
+      <>
+        <div id="toolbar" ref={this.toolbar}>
+          <label htmlFor="tools">Select a tool</label>
+          <select name="tools" id="tools">
+            <option>Marble</option>
+          </select>
+        </div>
+        <canvas id="marble-sim" ref={this.canvas}></canvas>
+      </>
+    );
   }
 }

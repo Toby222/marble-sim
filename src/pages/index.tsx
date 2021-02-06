@@ -10,10 +10,7 @@ export default class MarbleSim extends React.Component {
         <Head>
           <title>Marbles 4 Catgirls</title>
         </Head>
-        <>
-          <div id="toolbar">Test</div>
-          <Scene />
-        </>
+        <Scene />
       </>
     );
   }
