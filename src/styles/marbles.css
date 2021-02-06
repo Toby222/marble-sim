@@ -1,7 +1,21 @@
+#toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 50px;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+
+  background: hsl(235, 22%, 80%);
+}
+
 #marble-sim {
   margin: 0;
   padding: 0;
   position: absolute;
-  top: 0;
+  top: 50px;
   left: 0;
+
+  background: hsl(235, 22%, 30%);
 }
