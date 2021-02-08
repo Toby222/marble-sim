@@ -23,8 +23,7 @@ export class Scene extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-    this.world = new planck.World();
-    this.world.setGravity(new planck.Vec2(0, 10));
+    this.world = new planck.World({ gravity: new planck.Vec2(0, 10) });
 
     this.canvas = React.createRef();
     this.toolbar = React.createRef();
