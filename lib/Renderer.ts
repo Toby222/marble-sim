@@ -1,12 +1,18 @@
-type strokeStyle = CanvasGradient | CanvasPattern | string;
+type drawStyle = CanvasGradient | CanvasPattern | string;
 
 interface RendererOptions {
   scale: number;
   lineWidth: number;
+  wireframe: boolean;
   strokeStyle: {
-    dynamic: strokeStyle;
-    static: strokeStyle;
-    kinematic: strokeStyle;
+    dynamic: drawStyle;
+    static: drawStyle;
+    kinematic: drawStyle;
+  };
+  fillStyle: {
+    dynamic: drawStyle;
+    static: drawStyle;
+    kinematic: drawStyle;
   };
 }
 
@@ -14,7 +20,8 @@ import planck from "planck-js";
 declare module "planck-js" {
   export interface Body {
     render?: {
-      stroke?: strokeStyle;
+      stroke?: drawStyle;
+      fill?: drawStyle;
       custom?: (
         ctx: CanvasRenderingContext2D,
         pos: planck.Vec2,
@@ -41,10 +48,16 @@ export class CanvasRenderer {
     options: Partial<RendererOptions> = {}
   ) {
     const defaultScale = 16;
-    const defaultOptions = {
+    const defaultOptions: RendererOptions = {
       scale: defaultScale,
       lineWidth: 1 / defaultScale,
+      wireframe: true,
       strokeStyle: {
+        dynamic: "black",
+        static: "black",
+        kinematic: "black",
+      },
+      fillStyle: {
         dynamic: "black",
         static: "black",
         kinematic: "black",
@@ -83,14 +96,22 @@ export class CanvasRenderer {
           continue;
         }
 
-        if (body.render?.stroke) {
-          ctx.strokeStyle = body.render.stroke;
-        } else if (body.isDynamic()) {
+        if (body.isDynamic()) {
           ctx.strokeStyle = options.strokeStyle.dynamic;
+          ctx.fillStyle = options.fillStyle.dynamic;
         } else if (body.isKinematic()) {
           ctx.strokeStyle = options.strokeStyle.kinematic;
+          ctx.fillStyle = options.fillStyle.kinematic;
         } else if (body.isStatic()) {
           ctx.strokeStyle = options.strokeStyle.static;
+          ctx.fillStyle = options.fillStyle.static;
+        }
+
+        if (body.render?.stroke !== undefined) {
+          ctx.strokeStyle = body.render.stroke;
+        }
+        if (body.render?.fill !== undefined) {
+          ctx.fillStyle = body.render.fill;
         }
 
         const type = fixture.getType();
@@ -133,32 +154,32 @@ export class CanvasRenderer {
 
   drawCircle(body: planck.Body, shape: planck.Circle) {
     const ctx = this.ctx;
-    const lw = this.options.lineWidth;
+    const lineWidth = this.options.lineWidth;
 
     const radius = shape.getRadius();
     const pos = body.getPosition();
     const angle = body.getAngle();
 
-    const size = radius * 2 + lw * 2;
-
-    ctx.translate(pos.x + lw, pos.y + lw);
+    ctx.translate(pos.x + lineWidth, pos.y + lineWidth);
     ctx.rotate(angle);
 
-    if (body.render && body.render.custom) {
-      const pos = planck.Vec2(-radius - lw * 2, -radius - lw * 2);
+    if (body.render?.custom) {
+      const diameter = radius * 2 + lineWidth * 2;
+      const pos = planck.Vec2(-radius - lineWidth * 2, -radius - lineWidth * 2);
 
-      if (
-        body.render.custom(ctx, pos, {
-          width: size + lw,
-          height: size + lw,
-        }) !== true
-      ) {
+      const size2 = {
+        width: diameter,
+        height: diameter,
+      };
+
+      if (!body.render.custom(ctx, pos, size2)) {
         return;
       }
     }
 
     ctx.beginPath();
     ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+    if (!this.options.wireframe) ctx.fill();
     ctx.stroke();
 
     ctx.restore();
@@ -174,12 +195,13 @@ export class CanvasRenderer {
     ctx.moveTo(v1.x, v1.y);
     ctx.lineTo(v2.x, v2.y);
     ctx.lineCap = "round";
+    if (!this.options.wireframe) ctx.fill();
     ctx.stroke();
   }
 
   drawPolygon(body: planck.Body, shape: planck.Polygon | planck.Chain) {
     const ctx = this.ctx;
-    const lw = this.options.lineWidth;
+    const lineWidth = this.options.lineWidth;
 
     const vertices = shape.m_vertices;
     if (!vertices.length) {
@@ -203,17 +225,17 @@ export class CanvasRenderer {
     const pos = body.getPosition();
     const angle = body.getAngle();
 
-    ctx.translate(pos.x + lw * 2, pos.y + lw * 2);
+    ctx.translate(pos.x + lineWidth * 2, pos.y + lineWidth * 2);
     ctx.rotate(angle);
 
-    if (body.render && body.render.custom) {
+    if (body.render?.custom) {
       const size = {
-        width: width + lw,
-        height: height + lw,
+        width: width + lineWidth * 2,
+        height: height + lineWidth * 2,
       };
-      const pos = planck.Vec2(minX - lw, minY - lw);
+      const pos = planck.Vec2(minX - lineWidth, minY - lineWidth);
 
-      if (body.render.custom(ctx, pos, size) !== true) {
+      if (!body.render.custom(ctx, pos, size)) {
         return;
       }
     }
@@ -221,8 +243,8 @@ export class CanvasRenderer {
     ctx.beginPath();
     for (let i = 0; i < vertices.length; ++i) {
       const v = vertices[i];
-      const x = v.x - lw;
-      const y = v.y - lw;
+      const x = v.x - lineWidth;
+      const y = v.y - lineWidth;
       if (i === 0) {
         ctx.moveTo(x, y);
       } else {
@@ -234,6 +256,7 @@ export class CanvasRenderer {
       ctx.closePath();
     }
 
+    if (!this.options.wireframe) ctx.fill();
     ctx.stroke();
   }
 
@@ -246,6 +269,8 @@ export class CanvasRenderer {
     ctx.beginPath();
     ctx.moveTo(a.x, a.y);
     ctx.lineTo(b.x, b.y);
+
+    if (!this.options.wireframe) ctx.fill();
     ctx.stroke();
   }
 }

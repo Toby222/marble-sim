@@ -4,8 +4,9 @@ import { CreateBlock } from "./tool/CreateBlock";
 import { CreateMarble } from "./tool/CreateMarble";
 import { DoNothing } from "./tool/DoNothing";
 
-export class Util {
-  static getCursorPositionInCanvas(
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace Util {
+  export function getCursorPositionInCanvas(
     canvas: HTMLCanvasElement,
     event: MouseEvent
   ) {
@@ -15,7 +16,7 @@ export class Util {
     return planck.Vec2(x, y);
   }
 
-  static readonly tools: AnyTool[] = [
+  export const tools: AnyTool[] = [
     new DoNothing(),
     new CreateMarble(),
     new CreateBlock(),

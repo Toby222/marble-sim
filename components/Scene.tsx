@@ -1,12 +1,12 @@
-import React, { FormEvent } from "react";
+import React from "react";
 
 import planck from "planck-js";
 import { CanvasRenderer as Renderer } from "../lib/Renderer";
 import { Runner } from "../lib/Runner";
 
-import { ToolSelection } from "./ToolSelection";
 import { Util } from "../lib/Util";
 import { AnyTool } from "../lib/tool/BaseTool";
+import { ToolBar } from "./ToolBar";
 
 type Props = Record<string, never>;
 
@@ -31,7 +31,10 @@ export class Scene extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.world = new planck.World({ gravity: new planck.Vec2(0, 10) });
+    this.world = new planck.World({
+      gravity: new planck.Vec2(0, 10),
+      // allowSleep: false,
+    });
 
     this.state = {
       tool: Util.tools[0],
@@ -43,12 +46,12 @@ export class Scene extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.canvas.current.style.visibility = "none";
+    window.removeEventListener("resize", this.handleResize);
     this.runner.stop();
+
     delete this.renderer;
     delete this.runner;
     delete this.world;
-    window.removeEventListener("resize", this.handleResize);
   }
 
   componentDidMount() {
@@ -97,7 +100,10 @@ export class Scene extends React.Component<Props, State> {
       }
     });
 
-    this.renderer = new Renderer(this.world, context, { scale: 1 });
+    this.renderer = new Renderer(this.world, context, {
+      scale: 1,
+      wireframe: false,
+    });
     this.runner = new Runner(this.world, { fps: 30, speed: 30 });
 
     window.addEventListener("resize", () => this.handleResize());
@@ -136,40 +142,7 @@ export class Scene extends React.Component<Props, State> {
   render() {
     return (
       <>
-        <div id="toolbar" ref={this.toolbar}>
-          <span ref={this.fpsCounter} />
-          &nbsp;
-          <ToolSelection
-            onSelected={(tool: AnyTool) => this.setState({ tool })}
-          />
-          <label htmlFor="change-speed">Adjust speed:</label>
-          &nbsp;
-          <input
-            name="change-speed"
-            type="range"
-            min={0}
-            max={100}
-            defaultValue={30}
-            onInput={(event: FormEvent<HTMLInputElement>) => {
-              const value = (event.target as HTMLInputElement).valueAsNumber;
-              this.runner.options.speed = value;
-            }}
-          />
-          <input
-            type="checkbox"
-            defaultChecked={true}
-            onInput={(event: FormEvent<HTMLInputElement>) => {
-              const checked = (event.target as HTMLInputElement).checked;
-              for (
-                let edge = this.edges.getFixtureList();
-                edge;
-                edge = edge.getNext()
-              ) {
-                edge.setSensor(!checked);
-              }
-            }}
-          />
-        </div>
+        <ToolBar scene={this} />
         <canvas id="marble-sim" ref={this.canvas} />
       </>
     );

@@ -12,7 +12,7 @@
     "start": "next start",
     "prod": "yarn build && yarn start",
     "lint:eslint-strict": "yarn lint:eslint --max-warnings=0",
-    "lint:eslint": "eslint src/**/*.{ts,tsx} --format visualstudio",
+    "lint:eslint": "eslint **/*.{ts,tsx} --format visualstudio",
     "lint:prettier": "prettier . --check",
     "lint": "yarn lint:eslint && yarn lint:prettier",
     "format:eslint": "yarn lint:eslint --fix",
