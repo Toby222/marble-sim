@@ -1,16 +1,24 @@
 import React, { FormEvent } from "react";
 
 import planck from "planck-js";
-import { CanvasRenderer as Renderer } from "../lib/renderer";
-import { Runner } from "../lib/runner";
+import { CanvasRenderer as Renderer } from "../lib/Renderer";
+import { Runner } from "../lib/Runner";
+
+import { ToolSelection } from "./ToolSelection";
+import { Util } from "../lib/Util";
+import { AnyTool } from "../lib/tool/BaseTool";
 
 type Props = Record<string, never>;
+
+interface State {
+  tool: AnyTool;
+}
 
 interface UserData {
   markedForDeletion: boolean;
 }
 
-export class Scene extends React.Component<Props> {
+export class Scene extends React.Component<Props, State> {
   canvas: React.RefObject<HTMLCanvasElement>;
   toolbar: React.RefObject<HTMLDivElement>;
   fpsCounter: React.RefObject<HTMLSpanElement>;
@@ -24,6 +32,10 @@ export class Scene extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
     this.world = new planck.World({ gravity: new planck.Vec2(0, 10) });
+
+    this.state = {
+      tool: Util.tools[0],
+    };
 
     this.canvas = React.createRef();
     this.toolbar = React.createRef();
@@ -91,16 +103,7 @@ export class Scene extends React.Component<Props> {
     window.addEventListener("resize", () => this.handleResize());
 
     this.canvas.current.addEventListener("click", (event: MouseEvent) => {
-      this.world
-        .createBody({
-          type: "dynamic",
-          position: this.getCursorPositionInCanvas(event),
-        })
-        .createFixture({
-          shape: new planck.Circle(planck.Vec2(), 20),
-          restitution: 1,
-          friction: 0,
-        });
+      this.state.tool?.click(event, this.world, this.canvas.current);
     });
 
     const render = () => {
@@ -122,13 +125,6 @@ export class Scene extends React.Component<Props> {
     this.runner.start(render, update);
   }
 
-  getCursorPositionInCanvas(event: MouseEvent) {
-    const rect = this.canvas.current.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    return planck.Vec2(x, y);
-  }
-
   handleResize() {
     if (!(this.canvas?.current ?? false)) {
       return console.debug("canvas is not defined. This shouldn't happen.");
@@ -143,11 +139,9 @@ export class Scene extends React.Component<Props> {
         <div id="toolbar" ref={this.toolbar}>
           <span ref={this.fpsCounter} />
           &nbsp;
-          <label htmlFor="tools">Select a tool</label>
-          &nbsp;
-          <select name="tools" >
-            <option>Marble</option>
-          </select>
+          <ToolSelection
+            onSelected={(tool: AnyTool) => this.setState({ tool })}
+          />
           <label htmlFor="change-speed">Adjust speed:</label>
           &nbsp;
           <input
