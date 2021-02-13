@@ -40,7 +40,7 @@ export class Renderer {
   world: planck.World;
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
-  draw: unknown;
+  draw?: (ctx: CanvasRenderingContext2D) => void;
 
   constructor(
     world: planck.World,
@@ -83,9 +83,9 @@ export class Renderer {
   renderWorld() {
     const { ctx, canvas, options } = this;
     this.clear(canvas, ctx);
-    if (typeof this.draw === "function") {
-      this.draw(ctx);
-    }
+
+    this.draw?.(ctx);
+
     for (let body = this.world.getBodyList(); body; body = body.getNext()) {
       for (
         let fixture = body.getFixtureList();
