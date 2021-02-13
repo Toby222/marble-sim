@@ -1,8 +1,7 @@
 {
   "name": "marble-sim",
-  "version": "0.0.2-pre",
+  "version": "0.0.4-pre",
   "description": "Marble Physics Simulator for catgirls",
-  "main": " ",
   "repository": "https://github.com/Toby222/marble-sim",
   "author": "Tobias Berger <tobi.berger13@gmail.com>",
   "license": "MIT",
