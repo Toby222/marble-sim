@@ -1,15 +1,20 @@
-name: Code quality check
+name: Check Code Quality
 on:
   push:
-  merge:
+    branches: 
+      - prod
+      - dev
   pull_request:
-    branches: [dev, prod]
+    branches: 
+      - prod
+      - dev
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install modules
+      - name: Install package
         run: yarn install
-      - name: Run tests
+      - name: Run `test` script
         run: yarn test
