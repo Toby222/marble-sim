@@ -1,7 +1,7 @@
 import React from "react";
 
 import planck from "planck-js";
-import { CanvasRenderer as Renderer } from "../lib/Renderer";
+import { Renderer } from "../lib/Renderer";
 import { Runner } from "../lib/Runner";
 
 import { Util } from "../lib/Util";

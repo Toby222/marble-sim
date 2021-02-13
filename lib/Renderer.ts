@@ -35,7 +35,7 @@ declare module "planck-js" {
   }
 }
 
-export class CanvasRenderer {
+export class Renderer {
   options: RendererOptions;
   world: planck.World;
   ctx: CanvasRenderingContext2D;
