@@ -3,6 +3,7 @@ import { AnyTool } from "./tool/BaseTool";
 import { CreateBlock } from "./tool/CreateBlock";
 import { CreateMarble } from "./tool/CreateMarble";
 import { DoNothing } from "./tool/DoNothing";
+import { DrawLine } from "./tool/DrawLine";
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Util {
@@ -20,5 +21,6 @@ export namespace Util {
     new DoNothing(),
     new CreateMarble(),
     new CreateBlock(),
+    new DrawLine(),
   ];
 }
