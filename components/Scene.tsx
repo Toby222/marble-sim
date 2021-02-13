@@ -27,7 +27,7 @@ export class Scene extends React.Component<Props, State> {
   renderer: Renderer;
   runner: Runner;
 
-  edges: planck.Body;
+  edge: planck.Body;
 
   constructor(props: Props) {
     super(props);
@@ -58,29 +58,23 @@ export class Scene extends React.Component<Props, State> {
     const context = this.canvas.current.getContext("2d");
     this.handleResize();
 
+    const clientWidth = this.canvas.current.clientWidth;
+    const clientHeight = this.canvas.current.clientHeight;
     const corners = [
       planck.Vec2(0, 0), // NW
-      planck.Vec2(0, this.canvas.current.clientHeight), // SW
-      planck.Vec2(this.canvas.current.clientWidth, 0), // NE
-      planck.Vec2(
-        this.canvas.current.clientWidth,
-        this.canvas.current.clientHeight
-      ), // SE
+      planck.Vec2(clientWidth, 0), // NE
+      planck.Vec2(clientWidth, clientHeight), // SE
+      planck.Vec2(0, clientHeight), // SW
     ];
 
-    const edge = this.world.createBody();
-    const edgeFixtures = [
-      edge.createFixture(planck.Edge(corners[0], corners[1])), // W
-      edge.createFixture(planck.Edge(corners[1], corners[3])), // S
-      edge.createFixture(planck.Edge(corners[2], corners[3])), // E
-      edge.createFixture(planck.Edge(corners[0], corners[2])), // N
-    ];
-    edge.render = { hidden: true };
-    this.edges = edge;
+    this.edge = this.world.createBody();
+    this.edge.createFixture(planck.Chain([...corners, corners[0]]));
+
+    this.edge.render = { hidden: true };
 
     this.world.on("begin-contact", (contact: planck.Contact) => {
       if (
-        edgeFixtures.includes(contact.getFixtureA()) &&
+        contact.getFixtureA().getBody() === this.edge &&
         contact.getFixtureA().isSensor()
       ) {
         contact
@@ -90,7 +84,7 @@ export class Scene extends React.Component<Props, State> {
       }
 
       if (
-        edgeFixtures.includes(contact.getFixtureB()) &&
+        contact.getFixtureA().getBody() === this.edge &&
         contact.getFixtureB().isSensor()
       ) {
         contact

@@ -256,7 +256,7 @@ export class Renderer {
       ctx.closePath();
     }
 
-    if (!this.options.wireframe) ctx.fill();
+    if (!this.options.wireframe && !(shape instanceof planck.Chain)) ctx.fill();
     ctx.stroke();
   }
 
