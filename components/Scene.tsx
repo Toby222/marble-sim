@@ -104,7 +104,16 @@ export class Scene extends React.Component<Props, State> {
     window.addEventListener("resize", () => this.handleResize());
 
     this.canvas.current.addEventListener("click", (event: MouseEvent) => {
-      this.state.tool?.click(event, this.world, this.canvas.current);
+      this.state.tool?.click?.(event, this.world, this.canvas.current);
+    });
+    this.canvas.current.addEventListener("mousedown", (event: MouseEvent) => {
+      this.state.tool?.mousedown?.(event, this.world, this.canvas.current);
+    });
+    this.canvas.current.addEventListener("mouseup", (event: MouseEvent) => {
+      this.state.tool?.mouseup?.(event, this.world, this.canvas.current);
+    });
+    this.canvas.current.addEventListener("keydown", (_event: KeyboardEvent) => {
+      // TODO: Move camera here
     });
 
     const render = () => {
