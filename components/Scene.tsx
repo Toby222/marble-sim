@@ -103,6 +103,7 @@ export class Scene extends React.Component<Props, State> {
     this.renderer = new Renderer(this.world, context, {
       scale: 1,
       wireframe: false,
+      lineWidth: 2,
     });
     this.runner = new Runner(this.world, { fps: 30, speed: 30 });
 

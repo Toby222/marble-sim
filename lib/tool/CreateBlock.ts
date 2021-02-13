@@ -21,7 +21,7 @@ export class CreateBlock extends BaseTool {
 
     body.render = {
       fill: CreateBlock.gradient,
-      stroke: "transparent",
+      stroke: CreateBlock.gradient,
     };
 
     body.createFixture({
