@@ -1,11 +1,11 @@
 name: Check Code Quality
 on:
   push:
-    branches: 
+    branches:
       - prod
       - dev
   pull_request:
-    branches: 
+    branches:
       - prod
       - dev
   workflow_dispatch:

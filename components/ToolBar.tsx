@@ -41,7 +41,7 @@ export class ToolBar extends React.Component<Props> {
             onInput={(event: FormEvent<HTMLInputElement>) => {
               const checked = (event.target as HTMLInputElement).checked;
               for (
-                let edge = scene.edges.getFixtureList();
+                let edge = scene.edge.getFixtureList();
                 edge;
                 edge = edge.getNext()
               ) {

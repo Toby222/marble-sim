@@ -16,8 +16,7 @@ export class CreateMarble extends BaseTool {
     if (!CreateMarble.gradient) {
       CreateMarble.gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
       CreateMarble.gradient.addColorStop(0, "cyan");
-      CreateMarble.gradient.addColorStop(0.9, "white");
-      CreateMarble.gradient.addColorStop(1, "purple");
+      CreateMarble.gradient.addColorStop(1, "white");
     }
 
     body.render = {
