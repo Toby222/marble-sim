@@ -9,8 +9,6 @@ export class Runner {
   fps: number;
   runId?: number;
 
-  private _slomo: number;
-
   render?: () => void;
   update?: (step: number) => void;
 

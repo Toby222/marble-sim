@@ -3,11 +3,16 @@
   top: 0;
   left: 0;
   height: 50px;
-  margin: 0;
-  padding: 0;
-  width: 100vw;
+  width: calc(100vw - 10px);
+  padding: 5px;
+
+  vertical-align: middle;
+  user-select: none;
 
   background: hsl(235, 22%, 80%);
+}
+#toolbar input {
+  vertical-align: middle;
 }
 
 #marble-sim {
