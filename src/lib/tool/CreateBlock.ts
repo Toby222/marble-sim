@@ -20,6 +20,7 @@ export class CreateBlock extends BaseTool {
         ),
         restitution: 1,
         friction: 1,
+        density: 1,
       });
   }
 }

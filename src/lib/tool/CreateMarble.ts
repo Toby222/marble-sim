@@ -15,6 +15,7 @@ export class CreateMarble extends BaseTool {
         shape: new planck.Circle(planck.Vec2(), 20),
         restitution: 1,
         friction: 1,
+        density: 1,
       });
   }
 }
