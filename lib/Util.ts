@@ -2,11 +2,15 @@ import planck from "planck-js";
 import { AnyTool } from "./tool/BaseTool";
 import { CreateBlock } from "./tool/CreateBlock";
 import { CreateMarble } from "./tool/CreateMarble";
-import { DoNothing } from "./tool/DoNothing";
+import { ClickAndDrag } from "./tool/ClickAndDrag";
 import { DrawLine } from "./tool/DrawLine";
+
+import { Scene } from "../components/Scene";
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Util {
+  export let scene: Scene;
+
   export function getCursorPositionInCanvas(
     canvas: HTMLCanvasElement,
     event: MouseEvent
@@ -18,9 +22,10 @@ export namespace Util {
   }
 
   export const tools: AnyTool[] = [
-    new DoNothing(),
+    new ClickAndDrag(),
     new CreateMarble(),
     new CreateBlock(),
     new DrawLine(),
   ];
 }
+export default Util;

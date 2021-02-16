@@ -12,5 +12,6 @@ export abstract class BaseTool {
 
   click?(event: MouseEvent, world: World, canvas: HTMLCanvasElement): void;
   mousedown?(event: MouseEvent, world: World, canvas: HTMLCanvasElement): void;
+  mousemove?(event: MouseEvent, world: World, canvas: HTMLCanvasElement): void;
   mouseup?(event: MouseEvent, world: World, canvas: HTMLCanvasElement): void;
 }

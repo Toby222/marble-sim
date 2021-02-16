@@ -19,7 +19,7 @@ export class DrawLine extends BaseTool {
     this.startPos = Util.getCursorPositionInCanvas(canvas, event);
   }
 
-  mouseup(event: MouseEvent, world: planck.World, canvas: HTMLCanvasElement) {
+  mouseup(event: MouseEvent, _world: planck.World, canvas: HTMLCanvasElement) {
     DrawLine.body.createFixture(
       new planck.Edge(
         this.startPos,
