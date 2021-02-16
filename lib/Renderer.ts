@@ -206,7 +206,7 @@ export class Renderer {
     const ctx = this.ctx;
     const lineWidth = this.options.lineWidth;
 
-    const vertices = shape.m_vertices; // .map(vx => planck.Vec2(vx).add(this.offset));
+    const vertices = shape.m_vertices;
     if (!vertices.length) {
       return;
     }
