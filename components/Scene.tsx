@@ -90,7 +90,7 @@ export class Scene extends React.Component<Props, State> {
     this.edge = this.world.createBody();
     this.edge.createFixture(planck.Chain([...corners, corners[0]]));
 
-    this.edge.render = { hidden: true };
+    this.edge.render = { hidden: false };
 
     this.world.on("begin-contact", (contact: planck.Contact) => {
       if (

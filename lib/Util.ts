@@ -33,3 +33,4 @@ export namespace Util {
   ];
 }
 export default Util;
+(global as any).util = Util;
