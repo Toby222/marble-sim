@@ -27,7 +27,7 @@ export class ToolSelection extends React.Component<Props, State> {
         <select
           name="tools"
           onChange={(ev) => {
-            this.props.onSelected(Util.tools[ev.target.value]);
+            this.props.onSelected(Util.tools[parseInt(ev.target.value)]);
           }}
         >
           {Util.tools.map((tool, i) => (

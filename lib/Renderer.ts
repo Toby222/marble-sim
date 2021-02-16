@@ -41,6 +41,7 @@ export class Renderer {
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
   draw?: (ctx: CanvasRenderingContext2D) => void;
+  offset: planck.Vec2 = new planck.Vec2();
 
   constructor(
     world: planck.World,
@@ -73,7 +74,7 @@ export class Renderer {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
 
-    this.draw = null;
+    this.draw = undefined;
   }
 
   clear(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
@@ -157,7 +158,7 @@ export class Renderer {
     const lineWidth = this.options.lineWidth;
 
     const radius = shape.getRadius();
-    const pos = body.getPosition();
+    const pos = planck.Vec2(body.getPosition()).add(this.offset);
     const angle = body.getAngle();
 
     ctx.translate(pos.x + lineWidth, pos.y + lineWidth);
@@ -188,8 +189,10 @@ export class Renderer {
   drawEdge(_body: planck.Body, shape: planck.Edge) {
     const ctx = this.ctx;
 
-    const v1 = shape.m_vertex1;
-    const v2 = shape.m_vertex2;
+    const v1 = planck.Vec2(shape.m_vertex1);
+    const v2 = planck.Vec2(shape.m_vertex2);
+    v1.add(this.offset);
+    v2.add(this.offset);
 
     ctx.beginPath();
     ctx.moveTo(v1.x, v1.y);
@@ -203,7 +206,7 @@ export class Renderer {
     const ctx = this.ctx;
     const lineWidth = this.options.lineWidth;
 
-    const vertices = shape.m_vertices;
+    const vertices = shape.m_vertices; // .map(vx => planck.Vec2(vx).add(this.offset));
     if (!vertices.length) {
       return;
     }
@@ -222,7 +225,7 @@ export class Renderer {
     const width = maxX - minX;
     const height = maxY - minY;
 
-    const pos = body.getPosition();
+    const pos = planck.Vec2(body.getPosition()).add(this.offset);
     const angle = body.getAngle();
 
     ctx.translate(pos.x + lineWidth * 2, pos.y + lineWidth * 2);

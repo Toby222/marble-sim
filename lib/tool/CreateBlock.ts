@@ -2,16 +2,24 @@ import { BaseTool } from "./BaseTool";
 import planck from "planck-js";
 import { Util } from "../Util";
 
-export class CreateBlock extends BaseTool {
+class CreateBlock extends BaseTool {
   readonly toolName = "Create Block";
 
   private static gradient: CanvasGradient;
   click(event: MouseEvent, world: planck.World, canvas: HTMLCanvasElement) {
+    console.log(
+      Util.getCursorPositionInCanvas(
+        canvas,
+        event,
+        Util.globals.scene?.renderer
+      )
+    );
     const body = world.createDynamicBody({
-      position: Util.getCursorPositionInCanvas(canvas, event),
+      position: Util.getCursorPositionInCanvas(canvas, event, true),
     });
 
     const ctx = canvas.getContext("2d");
+    if (ctx === null) return;
 
     if (!CreateBlock.gradient) {
       CreateBlock.gradient = ctx.createLinearGradient(-10, -10, 10, 10);
@@ -37,3 +45,7 @@ export class CreateBlock extends BaseTool {
     });
   }
 }
+
+const instance = new CreateBlock();
+Object.freeze(instance);
+export default instance;
