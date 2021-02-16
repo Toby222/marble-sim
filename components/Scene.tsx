@@ -68,7 +68,7 @@ export class Scene extends React.Component<Props, State> {
 
     const context = this.canvas.current.getContext("2d");
     if (context === null) {
-      (this.canvas.current.parentElement??document).append(
+      (this.canvas.current.parentElement ?? document).append(
         "CanvasRenderingContext2D not supported."
       );
       this.canvas.current.remove();

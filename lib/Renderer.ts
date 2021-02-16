@@ -192,7 +192,7 @@ export class Renderer {
     const v1 = planck.Vec2(shape.m_vertex1);
     const v2 = planck.Vec2(shape.m_vertex2);
     v1.add(this.offset);
-    v2.add(this.offset)
+    v2.add(this.offset);
 
     ctx.beginPath();
     ctx.moveTo(v1.x, v1.y);
@@ -206,7 +206,7 @@ export class Renderer {
     const ctx = this.ctx;
     const lineWidth = this.options.lineWidth;
 
-    const vertices = shape.m_vertices // .map(vx => planck.Vec2(vx).add(this.offset));
+    const vertices = shape.m_vertices; // .map(vx => planck.Vec2(vx).add(this.offset));
     if (!vertices.length) {
       return;
     }

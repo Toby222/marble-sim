@@ -7,8 +7,15 @@ class CreateBlock extends BaseTool {
 
   private static gradient: CanvasGradient;
   click(event: MouseEvent, world: planck.World, canvas: HTMLCanvasElement) {
+    console.log(
+      Util.getCursorPositionInCanvas(
+        canvas,
+        event,
+        Util.globals.scene?.renderer
+      )
+    );
     const body = world.createDynamicBody({
-      position: Util.getCursorPositionInCanvas(canvas, event),
+      position: Util.getCursorPositionInCanvas(canvas, event, true),
     });
 
     const ctx = canvas.getContext("2d");
