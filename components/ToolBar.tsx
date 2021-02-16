@@ -28,6 +28,7 @@ export class ToolBar extends React.Component<Props> {
             max={100}
             defaultValue={30}
             onInput={(event: FormEvent<HTMLInputElement>) => {
+              if (scene.runner === undefined) return;
               const value = (event.target as HTMLInputElement).valueAsNumber;
               scene.runner.options.speed = value;
             }}
@@ -39,6 +40,7 @@ export class ToolBar extends React.Component<Props> {
             name="edge-delete"
             defaultChecked={false}
             onInput={(event: FormEvent<HTMLInputElement>) => {
+              if (scene.edge === undefined) return;
               const checked = (event.target as HTMLInputElement).checked;
               for (
                 let edge = scene.edge.getFixtureList();
@@ -56,6 +58,7 @@ export class ToolBar extends React.Component<Props> {
             name="wireframe-render"
             defaultChecked={false}
             onInput={(event: FormEvent<HTMLInputElement>) => {
+              if (scene.renderer === undefined) return;
               const checked = (event.target as HTMLInputElement).checked;
               scene.renderer.options.wireframe = checked;
             }}

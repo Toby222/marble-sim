@@ -2,9 +2,9 @@ import { BaseTool } from "./BaseTool";
 import planck from "planck-js";
 import { Util } from "../Util";
 
-export class DrawLine extends BaseTool {
-  toolName = "Draw Line";
-  private startPos: planck.Vec2;
+class DrawLine extends BaseTool {
+  readonly toolName = "Draw Line";
+  private static startPos: planck.Vec2 | null = null;
 
   private static body: planck.Body;
 
@@ -16,15 +16,20 @@ export class DrawLine extends BaseTool {
         stroke: "pink",
       };
     }
-    this.startPos = Util.getCursorPositionInCanvas(canvas, event);
+    DrawLine.startPos = Util.getCursorPositionInCanvas(canvas, event);
   }
 
   mouseup(event: MouseEvent, _world: planck.World, canvas: HTMLCanvasElement) {
+    if (DrawLine.startPos === null) return;
     DrawLine.body.createFixture(
       new planck.Edge(
-        this.startPos,
+        DrawLine.startPos,
         Util.getCursorPositionInCanvas(canvas, event)
       )
     );
   }
 }
+
+const instance = new DrawLine();
+Object.freeze(instance);
+export default instance;

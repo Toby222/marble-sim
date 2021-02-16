@@ -2,7 +2,7 @@ import { BaseTool } from "./BaseTool";
 import planck from "planck-js";
 import { Util } from "../Util";
 
-export class CreateMarble extends BaseTool {
+class CreateMarble extends BaseTool {
   readonly toolName = "Create Marble";
 
   private static gradient: CanvasGradient;
@@ -12,6 +12,7 @@ export class CreateMarble extends BaseTool {
     });
 
     const ctx = canvas.getContext("2d");
+    if (ctx === null) return;
 
     if (!CreateMarble.gradient) {
       CreateMarble.gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
@@ -32,3 +33,7 @@ export class CreateMarble extends BaseTool {
     });
   }
 }
+
+const instance = new CreateMarble();
+Object.freeze(instance);
+export default instance;

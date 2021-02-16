@@ -47,9 +47,7 @@ export class Runner {
         dt = dt + Math.min(1, (now - last) / 1000);
         while (dt > this.slowStep) {
           this.world.step(this.step);
-          if (typeof update === "function") {
-            this.update(this.step);
-          }
+          this.update?.(this.step);
           dt -= this.slowStep;
         }
         delta = (now - last) / 1000;
@@ -77,7 +75,7 @@ export class Runner {
   stop() {
     if (this.runId) {
       cancelAnimationFrame(this.runId);
-      this.runId = null;
+      this.runId = undefined;
     }
   }
 }

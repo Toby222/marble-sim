@@ -41,6 +41,7 @@ export class Renderer {
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
   draw?: (ctx: CanvasRenderingContext2D) => void;
+  offset: planck.Vec2 = new planck.Vec2();
 
   constructor(
     world: planck.World,
@@ -73,7 +74,7 @@ export class Renderer {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
 
-    this.draw = null;
+    this.draw = undefined;
   }
 
   clear(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {

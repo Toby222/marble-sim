@@ -23,11 +23,11 @@ export class Scene extends React.Component<Props, State> {
   toolbar: React.RefObject<HTMLDivElement>;
   fpsCounter: React.RefObject<HTMLSpanElement>;
 
-  world: planck.World;
-  renderer: Renderer;
-  runner: Runner;
+  world?: planck.World;
+  renderer?: Renderer;
+  runner?: Runner;
 
-  edge: planck.Body;
+  edge?: planck.Body;
 
   constructor(props: Props) {
     super(props);
@@ -44,12 +44,12 @@ export class Scene extends React.Component<Props, State> {
     this.toolbar = React.createRef();
     this.fpsCounter = React.createRef();
 
-    Util.scene = this;
+    Util.globals.scene = this;
   }
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
-    this.runner.stop();
+    this.runner?.stop();
 
     delete this.renderer;
     delete this.runner;
@@ -57,7 +57,25 @@ export class Scene extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    if (this.world === undefined) {
+      throw new Error("Scene.world is undefined, this shouldn't happen.");
+    }
+    if (this.canvas.current === null) {
+      throw new Error(
+        "Scene.canvas is null after mount, this shouldn't happen."
+      );
+    }
+
     const context = this.canvas.current.getContext("2d");
+    if (context === null) {
+      (this.canvas.current.parentElement??document).append(
+        "CanvasRenderingContext2D not supported."
+      );
+      this.canvas.current.remove();
+
+      return;
+    }
+
     this.handleResize();
 
     const clientWidth = this.canvas.current.clientWidth;
@@ -106,33 +124,38 @@ export class Scene extends React.Component<Props, State> {
     window.addEventListener("resize", () => this.handleResize());
 
     this.canvas.current.addEventListener("click", (ev: MouseEvent) => {
-      this.state.tool?.click?.(ev, this.world, this.canvas.current);
+      if (this.world !== undefined && this.canvas.current !== null)
+        this.state.tool?.click?.(ev, this.world, this.canvas.current);
     });
     this.canvas.current.addEventListener("mousedown", (ev: MouseEvent) => {
-      this.state.tool?.mousedown?.(ev, this.world, this.canvas.current);
+      if (this.world !== undefined && this.canvas.current !== null)
+        this.state.tool?.mousedown?.(ev, this.world, this.canvas.current);
     });
     this.canvas.current.addEventListener("mouseup", (ev: MouseEvent) => {
-      this.state.tool?.mouseup?.(ev, this.world, this.canvas.current);
+      if (this.world !== undefined && this.canvas.current !== null)
+        this.state.tool?.mouseup?.(ev, this.world, this.canvas.current);
     });
     this.canvas.current.addEventListener("mousemove", (ev: MouseEvent) => {
-      this.state.tool?.mousemove?.(ev, this.world, this.canvas.current);
+      if (this.world !== undefined && this.canvas.current !== null)
+        this.state.tool?.mousemove?.(ev, this.world, this.canvas.current);
     });
     this.canvas.current.addEventListener("keydown", (_ev: KeyboardEvent) => {
       // TODO: Move camera here
     });
 
     const render = () => {
-      this.renderer.renderWorld();
+      this.renderer?.renderWorld();
+      if (!this.runner) return;
       if (this.fpsCounter.current)
         this.fpsCounter.current.innerText = `FPS: ${Math.round(
           this.runner.fps
-        )}; Bodies: ${this.world.getBodyCount()}`;
+        )}; Bodies: ${this.world?.getBodyCount()}`;
     };
 
     const update = () => {
-      for (let body = this.world.getBodyList(); body; body = body.getNext()) {
+      for (let body = this.world?.getBodyList(); body; body = body.getNext()) {
         if ((body.getUserData() as UserData)?.markedForDeletion) {
-          this.world.destroyBody(body);
+          body.getWorld().destroyBody(body);
         }
       }
     };
@@ -141,11 +164,12 @@ export class Scene extends React.Component<Props, State> {
   }
 
   handleResize() {
-    if (!(this.canvas?.current ?? false)) {
+    if (this.canvas.current === null) {
       return console.debug("canvas is not defined. This shouldn't happen.");
     }
     this.canvas.current.width = window.innerWidth;
-    this.canvas.current.height = window.innerHeight - 50;
+    this.canvas.current.height =
+      window.innerHeight - this.canvas.current.getBoundingClientRect().top;
   }
 
   render() {
