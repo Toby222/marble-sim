@@ -158,7 +158,7 @@ export class Renderer {
     const lineWidth = this.options.lineWidth;
 
     const radius = shape.getRadius();
-    const pos = body.getPosition();
+    const pos = planck.Vec2(body.getPosition()).add(this.offset);
     const angle = body.getAngle();
 
     ctx.translate(pos.x + lineWidth, pos.y + lineWidth);
@@ -206,7 +206,7 @@ export class Renderer {
     const ctx = this.ctx;
     const lineWidth = this.options.lineWidth;
 
-    const vertices = shape.m_vertices.map(vx => planck.Vec2(vx).add(this.offset));
+    const vertices = shape.m_vertices // .map(vx => planck.Vec2(vx).add(this.offset));
     if (!vertices.length) {
       return;
     }
@@ -225,7 +225,7 @@ export class Renderer {
     const width = maxX - minX;
     const height = maxY - minY;
 
-    const pos = body.getPosition();
+    const pos = planck.Vec2(body.getPosition()).add(this.offset);
     const angle = body.getAngle();
 
     ctx.translate(pos.x + lineWidth * 2, pos.y + lineWidth * 2);
