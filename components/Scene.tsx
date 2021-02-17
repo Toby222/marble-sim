@@ -21,13 +21,11 @@ interface UserData {
 export class Scene extends React.Component<Props, State> {
   canvas: React.RefObject<HTMLCanvasElement>;
   toolbar: React.RefObject<HTMLDivElement>;
-  fpsCounter: React.RefObject<HTMLSpanElement>;
+  infoSpan: React.RefObject<HTMLSpanElement>;
 
   world?: planck.World;
   renderer?: Renderer;
   runner?: Runner;
-
-  edge?: planck.Body;
 
   constructor(props: Props) {
     super(props);
@@ -42,7 +40,7 @@ export class Scene extends React.Component<Props, State> {
 
     this.canvas = React.createRef();
     this.toolbar = React.createRef();
-    this.fpsCounter = React.createRef();
+    this.infoSpan = React.createRef();
 
     Util.globals.scene = this;
   }
@@ -77,42 +75,6 @@ export class Scene extends React.Component<Props, State> {
     }
 
     this.handleResize();
-
-    const clientWidth = this.canvas.current.clientWidth;
-    const clientHeight = this.canvas.current.clientHeight;
-    const corners = [
-      planck.Vec2(0, 0), // NW
-      planck.Vec2(clientWidth, 0), // NE
-      planck.Vec2(clientWidth, clientHeight), // SE
-      planck.Vec2(0, clientHeight), // SW
-    ];
-
-    this.edge = this.world.createBody();
-    this.edge.createFixture(planck.Chain([...corners, corners[0]]));
-
-    this.edge.render = { hidden: false };
-
-    this.world.on("begin-contact", (contact: planck.Contact) => {
-      if (
-        contact.getFixtureA().getBody() === this.edge &&
-        contact.getFixtureA().isSensor()
-      ) {
-        contact
-          .getFixtureB()
-          .getBody()
-          .setUserData({ markedForDeletion: true });
-      }
-
-      if (
-        contact.getFixtureA().getBody() === this.edge &&
-        contact.getFixtureB().isSensor()
-      ) {
-        contact
-          .getFixtureA()
-          .getBody()
-          .setUserData({ markedForDeletion: true });
-      }
-    });
 
     this.renderer = new Renderer(this.world, context, {
       scale: 1,
@@ -158,10 +120,12 @@ export class Scene extends React.Component<Props, State> {
     const render = () => {
       this.renderer?.renderWorld();
       if (!this.runner) return;
-      if (this.fpsCounter.current)
-        this.fpsCounter.current.innerText = `FPS: ${Math.round(
+      if (this.infoSpan.current)
+        this.infoSpan.current.innerText = `FPS: ${Math.round(
           this.runner.fps
-        )}; Bodies: ${this.world?.getBodyCount()}`;
+        )}; Bodies: ${this.world?.getBodyCount()}; Position: [x:${-Math.round(
+          this.renderer?.offset.x ?? 0
+        )}, y:${-Math.round(this.renderer?.offset.y ?? 0)}]`;
     };
 
     const update = () => {
@@ -188,7 +152,7 @@ export class Scene extends React.Component<Props, State> {
     return (
       <>
         <ToolBar scene={this} />
-        <canvas id="marble-sim" ref={this.canvas} />
+        <canvas tabIndex={1} id="marble-sim" ref={this.canvas} />
       </>
     );
   }
