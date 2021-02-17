@@ -11,16 +11,19 @@ class ClickAndDrag extends BaseTool {
   mousedown(ev: MouseEvent, _world: planck.World, canvas: HTMLCanvasElement) {
     if (Util.globals.scene?.renderer === undefined) return;
 
-    ClickAndDrag.start = Util.getCursorPositionInCanvas(canvas, ev);
+    ClickAndDrag.start = Util.getCursorPositionInCanvas(canvas, ev).mul(
+      1 / Util.globals.scene.renderer.options.scale
+    );
     ClickAndDrag.startOffset = Util.globals.scene.renderer.offset;
   }
 
   mousemove(ev: MouseEvent, _world: planck.World, canvas: HTMLCanvasElement) {
-    if ((ev.buttons & 1) !== 1) {
+    if ((ev.buttons & (1 | (1 << 2))) === 0) {
       ClickAndDrag.start = null;
       ClickAndDrag.startOffset = null;
       return;
     }
+
     if (
       ClickAndDrag.start === null ||
       ClickAndDrag.startOffset === null ||
@@ -29,6 +32,7 @@ class ClickAndDrag extends BaseTool {
       return;
 
     const offset = Util.getCursorPositionInCanvas(canvas, ev)
+      .mul(1 / Util.globals.scene.renderer.options.scale)
       .sub(ClickAndDrag.start)
       .add(ClickAndDrag.startOffset);
 

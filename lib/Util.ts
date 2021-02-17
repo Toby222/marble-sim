@@ -19,16 +19,17 @@ export namespace Util {
     event: MouseEvent,
     renderer?: Renderer | boolean
   ) {
+    if (renderer === true) {
+      renderer = globals?.scene?.renderer;
+    }
+
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     const result = planck.Vec2(x, y);
     if (renderer) {
-      if (renderer === true) {
-        result.sub(globals.scene?.renderer?.offset ?? new planck.Vec2());
-      } else {
-        result.sub(renderer.offset);
-      }
+      result.mul(1 / renderer.options.scale);
+      result.sub(renderer.offset);
     }
     return result;
   }

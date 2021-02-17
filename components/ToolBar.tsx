@@ -15,7 +15,7 @@ export class ToolBar extends React.Component<Props> {
     return (
       <>
         <div id="toolbar" ref={scene.toolbar}>
-          <span ref={scene.fpsCounter} />
+          <span ref={scene.infoSpan} />
           {ToolBar.divider}
           <ToolSelection
             onSelected={(tool: AnyTool) => scene.setState({ tool })}
@@ -32,25 +32,7 @@ export class ToolBar extends React.Component<Props> {
               const value = (event.target as HTMLInputElement).valueAsNumber;
               scene.runner.options.speed = value;
             }}
-          />{" "}
-          {ToolBar.divider}
-          <label htmlFor="edge-delete">Remove Bodies at the edge</label>
-          <input
-            type="checkbox"
-            name="edge-delete"
-            defaultChecked={false}
-            onInput={(event: FormEvent<HTMLInputElement>) => {
-              if (scene.edge === undefined) return;
-              const checked = (event.target as HTMLInputElement).checked;
-              for (
-                let edge = scene.edge.getFixtureList();
-                edge;
-                edge = edge.getNext()
-              ) {
-                edge.setSensor(checked);
-              }
-            }}
-          />{" "}
+          />
           {ToolBar.divider}
           <label htmlFor="wireframe-render">Render bodies as wireframes</label>
           <input
