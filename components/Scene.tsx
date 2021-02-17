@@ -79,7 +79,6 @@ export class Scene extends React.Component<Props, State> {
     this.renderer = new Renderer(this.world, context, {
       scale: 1,
       wireframe: false,
-      lineWidth: 2,
     });
     this.runner = new Runner(this.world, { fps: 30, speed: 30 });
 
@@ -105,14 +104,17 @@ export class Scene extends React.Component<Props, State> {
       // TODO: Move camera here
     });
 
-    let zoomLevel = 1;
+    let zoomLevel = 0;
     this.canvas.current.addEventListener(
       "wheel",
       (ev: WheelEvent) => {
-        if (this.renderer === undefined) return;
+        if (this.renderer === undefined || this.canvas.current === null) return;
 
-        zoomLevel -= ev.deltaY / 40;
-        this.renderer.options.scale = 1.1 ** zoomLevel;
+        zoomLevel -= ev.deltaY / 100;
+        this.renderer.zoom(
+          zoomLevel,
+          Util.getCursorPositionInCanvas(this.canvas.current, ev)
+        );
       },
       { passive: true }
     );
@@ -125,7 +127,9 @@ export class Scene extends React.Component<Props, State> {
           this.runner.fps
         )}; Bodies: ${this.world?.getBodyCount()}; Position: [x:${-Math.round(
           this.renderer?.offset.x ?? 0
-        )}, y:${-Math.round(this.renderer?.offset.y ?? 0)}]`;
+        )}, y:${-Math.round(this.renderer?.offset.y ?? 0)}]; Scale: ${
+          Math.round((this.renderer?.options.scale ?? 0) * 100) / 100
+        }`;
     };
 
     const update = () => {

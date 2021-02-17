@@ -36,6 +36,7 @@ declare module "planck-js" {
 }
 
 export class Renderer {
+  static readonly zoomMultiplier = 1.1;
   options: RendererOptions;
   world: planck.World;
   ctx: CanvasRenderingContext2D;
@@ -51,7 +52,7 @@ export class Renderer {
     const defaultScale = 16;
     const defaultOptions: RendererOptions = {
       scale: defaultScale,
-      lineWidth: 1 / defaultScale,
+      lineWidth: NaN,
       wireframe: true,
       strokeStyle: {
         dynamic: "black",
@@ -79,6 +80,14 @@ export class Renderer {
 
   clear(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  zoom(level: number, mousePos: planck.Vec2 = new planck.Vec2()) {
+    const bottomRightBefore = new planck.Vec2(this.canvas.clientWidth / this.options.scale, this.canvas.clientHeight / this.options.scale);
+    this.options.scale = Renderer.zoomMultiplier ** level;
+    const bottomRightAfter = new planck.Vec2(this.canvas.clientWidth / this.options.scale, this.canvas.clientHeight / this.options.scale);
+
+    this.offset.add(bottomRightAfter.sub(bottomRightBefore).mul(1/2))
   }
 
   renderWorld() {
