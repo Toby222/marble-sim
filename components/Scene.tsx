@@ -143,6 +143,18 @@ export class Scene extends React.Component<Props, State> {
       // TODO: Move camera here
     });
 
+    let zoomLevel = 1;
+    this.canvas.current.addEventListener(
+      "wheel",
+      (ev: WheelEvent) => {
+        if (this.renderer === undefined) return;
+
+        zoomLevel -= ev.deltaY / 40;
+        this.renderer.options.scale = 1.1 ** zoomLevel;
+      },
+      { passive: true }
+    );
+
     const render = () => {
       this.renderer?.renderWorld();
       if (!this.runner) return;
