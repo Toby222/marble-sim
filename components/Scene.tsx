@@ -111,10 +111,7 @@ export class Scene extends React.Component<Props, State> {
         if (this.renderer === undefined || this.canvas.current === null) return;
 
         zoomLevel -= ev.deltaY / 100;
-        this.renderer.zoom(
-          zoomLevel,
-          Util.getCursorPositionInCanvas(this.canvas.current, ev)
-        );
+        this.renderer.zoom(zoomLevel);
       },
       { passive: true }
     );
