@@ -65,11 +65,8 @@ export class Runner {
   get step() {
     return 1 / this.options.fps;
   }
-  get slomo() {
-    return 1 / this.options.speed;
-  }
   get slowStep() {
-    return this.slomo * this.step;
+    return this.step / this.options.speed;
   }
 
   stop() {
