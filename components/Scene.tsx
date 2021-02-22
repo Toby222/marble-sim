@@ -142,7 +142,7 @@ export class Scene extends React.Component<Props, State> {
 
   handleResize() {
     if (this.canvas.current === null) {
-      return console.debug("canvas is not defined. This shouldn't happen.");
+      return console.warn("canvas is not defined. This shouldn't happen.");
     }
     this.canvas.current.width = window.innerWidth;
     this.canvas.current.height =
