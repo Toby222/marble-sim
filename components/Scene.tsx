@@ -120,9 +120,12 @@ export class Scene extends React.Component<Props, State> {
       this.renderer?.renderWorld();
       if (!this.runner) return;
       if (this.infoSpan.current)
-        this.infoSpan.current.innerText = `FPS: ${Math.round(
-          this.runner.fps
-        )}; Bodies: ${this.world?.getBodyCount()}; Position: [x:${-Math.round(
+        this.infoSpan.current.innerText = `FPS: ${Math.round(this.runner.fps)
+          .toString()
+          .padStart(
+            3,
+            "0"
+          )}; Bodies: ${this.world?.getBodyCount()}; Position: [x:${-Math.round(
           this.renderer?.offset.x ?? 0
         )}, y:${-Math.round(this.renderer?.offset.y ?? 0)}]; Scale: ${
           Math.round((this.renderer?.options.scale ?? 0) * 100) / 100
