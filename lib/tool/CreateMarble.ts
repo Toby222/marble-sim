@@ -2,8 +2,9 @@ import { BaseTool } from "./BaseTool";
 import planck from "planck-js";
 import { Util } from "../Util";
 
-class CreateMarble extends BaseTool {
+export class CreateMarble extends BaseTool {
   readonly toolName = "Create Marble";
+  static readonly instance = new CreateMarble();
 
   private static gradient: CanvasGradient;
   click(event: MouseEvent, world: planck.World, canvas: HTMLCanvasElement) {
@@ -34,6 +35,4 @@ class CreateMarble extends BaseTool {
   }
 }
 
-const instance = new CreateMarble();
-Object.freeze(instance);
-export default instance;
+export default Object.freeze(new CreateMarble());

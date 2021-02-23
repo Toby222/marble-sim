@@ -5,6 +5,10 @@ export type AnyTool = BaseTool;
 
 export abstract class BaseTool {
   abstract readonly toolName: string;
+  // static readonly instance: AnyTool;
+  static get instance(): Readonly<BaseTool> {
+    throw new Error("instance is an abstract member");
+  }
 
   toString(): string {
     return this.toolName;
