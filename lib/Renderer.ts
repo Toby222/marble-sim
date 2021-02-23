@@ -1,19 +1,19 @@
 type drawStyle = CanvasGradient | CanvasPattern | string;
 
 interface RendererOptions {
-  scale: number;
   lineWidth: number;
-  wireframe: boolean;
-  strokeStyle: {
-    dynamic: drawStyle;
-    static: drawStyle;
-    kinematic: drawStyle;
-  };
+  scale: number;
   fillStyle: {
     dynamic: drawStyle;
     static: drawStyle;
     kinematic: drawStyle;
   };
+  strokeStyle: {
+    dynamic: drawStyle;
+    static: drawStyle;
+    kinematic: drawStyle;
+  };
+  wireframe: boolean;
 }
 
 import planck from "planck-js";
@@ -52,19 +52,19 @@ export class Renderer {
   ) {
     const defaultScale = 16;
     const defaultOptions: RendererOptions = {
-      scale: defaultScale,
-      lineWidth: NaN,
-      wireframe: true,
-      strokeStyle: {
-        dynamic: "black",
-        static: "black",
-        kinematic: "black",
-      },
       fillStyle: {
         dynamic: "black",
-        static: "black",
         kinematic: "black",
+        static: "black",
       },
+      lineWidth: NaN,
+      scale: defaultScale,
+      strokeStyle: {
+        dynamic: "black",
+        kinematic: "black",
+        static: "black",
+      },
+      wireframe: true,
     };
 
     this.options = Object.assign(defaultOptions, options);
@@ -185,8 +185,8 @@ export class Renderer {
       const pos = planck.Vec2(-radius - lineWidth * 2, -radius - lineWidth * 2);
 
       const size2 = {
-        width: diameter,
         height: diameter,
+        width: diameter,
       };
 
       if (!body.render.custom(ctx, pos, size2)) {
@@ -249,8 +249,8 @@ export class Renderer {
 
     if (body.render?.custom) {
       const size = {
-        width: width + lineWidth * 2,
         height: height + lineWidth * 2,
+        width: width + lineWidth * 2,
       };
       const pos = planck.Vec2(minX - lineWidth, minY - lineWidth);
 
@@ -286,8 +286,8 @@ export class Renderer {
     const b = joint.getAnchorB();
 
     ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
+    ctx.moveTo(a.x + this.offset.x, a.y + this.offset.y);
+    ctx.lineTo(b.x + this.offset.x, b.y + this.offset.y);
 
     if (!this.options.wireframe) ctx.fill();
     ctx.stroke();

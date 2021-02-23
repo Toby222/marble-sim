@@ -1,6 +1,6 @@
 {
   "name": "marble-sim",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "Marble Physics Simulator for catgirls",
   "repository": "https://github.com/Toby222/marble-sim",
   "author": "Tobias Berger <tobi.berger13@gmail.com>",
@@ -12,7 +12,7 @@
     "start": "next start",
     "prod": "yarn build && yarn start",
     "lint:eslint-strict": "yarn lint:eslint --max-warnings=0",
-    "lint:eslint": "eslint **/*.{ts,tsx} --format visualstudio",
+    "lint:eslint": "eslint **/*.{ts,tsx}",
     "lint:prettier": "prettier . --check",
     "lint": "yarn lint:eslint && yarn lint:prettier",
     "format:eslint": "yarn lint:eslint --fix",

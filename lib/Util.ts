@@ -1,8 +1,10 @@
 import planck from "planck-js";
 import { AnyTool } from "./tool/BaseTool";
-import { CreateBlock } from "./tool/CreateBlock";
-import { CreateMarble } from "./tool/CreateMarble";
+
 import { DragCamera } from "./tool/DragCamera";
+import { Grab } from "./tool/Grab";
+import { CreateMarble } from "./tool/CreateMarble";
+import { CreateBlock } from "./tool/CreateBlock";
 import { DrawLine } from "./tool/DrawLine";
 
 import { Renderer } from "./Renderer";
@@ -36,10 +38,31 @@ export namespace Util {
 
   export const tools: AnyTool[] = [
     DragCamera.instance,
+    Grab.instance,
     CreateMarble.instance,
     CreateBlock.instance,
     DrawLine.instance,
   ];
+
+  export function findBody(
+    world: planck.World,
+    point: planck.Vec2,
+    callback: (body: planck.Body | null) => unknown
+  ) {
+    const body: planck.Body | null = null;
+    const aabb = planck.AABB(point, point);
+
+    const queryCallback = (fixture: planck.Fixture) => {
+      if (body || !fixture.getBody().isDynamic() || !fixture.testPoint(point)) {
+        callback(null);
+        return false;
+      }
+      callback(fixture.getBody());
+      return true;
+    };
+
+    world.queryAABB(aabb, queryCallback);
+  }
 }
 export default Util;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

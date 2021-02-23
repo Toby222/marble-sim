@@ -27,10 +27,10 @@ export class CreateMarble extends BaseTool {
     };
 
     body.createFixture({
-      shape: new planck.Circle(planck.Vec2(), 20),
-      restitution: 0.5,
-      friction: 0.6,
       density: 1,
+      friction: 0.6,
+      restitution: 0.5,
+      shape: new planck.Circle(planck.Vec2(), 20),
     });
   }
 }
