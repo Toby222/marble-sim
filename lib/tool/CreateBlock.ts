@@ -27,15 +27,15 @@ export class CreateBlock extends BaseTool {
     };
 
     body.createFixture({
+      density: 1,
+      friction: 0.9,
+      restitution: 0.5,
       shape: new planck.Box(
         20,
         20,
         planck.Vec2(),
         planck.Math.random(0, 2 * Math.PI)
       ),
-      restitution: 0.5,
-      friction: 0.9,
-      density: 1,
     });
   }
 }

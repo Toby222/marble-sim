@@ -6,10 +6,6 @@ export class DragCamera extends BaseTool {
   readonly toolName = "Drag Camera";
   static readonly instance: DragCamera = new DragCamera();
 
-  get instance() {
-    return DragCamera.instance;
-  }
-
   private static start: planck.Vec2 | null = null;
   private static startOffset: planck.Vec2 | null = null;
 
