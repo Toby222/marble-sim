@@ -286,8 +286,8 @@ export class Renderer {
     const b = joint.getAnchorB();
 
     ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
+    ctx.moveTo(a.x + this.offset.x, a.y + this.offset.y);
+    ctx.lineTo(b.x + this.offset.x, b.y + this.offset.y);
 
     if (!this.options.wireframe) ctx.fill();
     ctx.stroke();
