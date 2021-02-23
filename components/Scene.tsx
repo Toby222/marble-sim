@@ -111,10 +111,7 @@ export class Scene extends React.Component<Props, State> {
         if (this.renderer === undefined || this.canvas.current === null) return;
 
         zoomLevel -= ev.deltaY / 100;
-        this.renderer.zoom(
-          zoomLevel,
-          Util.getCursorPositionInCanvas(this.canvas.current, ev)
-        );
+        this.renderer.zoom(zoomLevel);
       },
       { passive: true }
     );
@@ -145,7 +142,7 @@ export class Scene extends React.Component<Props, State> {
 
   handleResize() {
     if (this.canvas.current === null) {
-      return console.debug("canvas is not defined. This shouldn't happen.");
+      return console.warn("canvas is not defined. This shouldn't happen.");
     }
     this.canvas.current.width = window.innerWidth;
     this.canvas.current.height =

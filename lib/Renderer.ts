@@ -22,6 +22,7 @@ declare module "planck-js" {
     render?: {
       stroke?: drawStyle;
       fill?: drawStyle;
+      /** @returns wether or not to use default rendering after call */
       custom?: (
         ctx: CanvasRenderingContext2D,
         pos: planck.Vec2,
@@ -82,12 +83,18 @@ export class Renderer {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  zoom(level: number, mousePos: planck.Vec2 = new planck.Vec2()) {
-    const bottomRightBefore = new planck.Vec2(this.canvas.clientWidth / this.options.scale, this.canvas.clientHeight / this.options.scale);
+  zoom(level: number) {
+    const bottomRightBefore = new planck.Vec2(
+      this.canvas.clientWidth / this.options.scale,
+      this.canvas.clientHeight / this.options.scale
+    );
     this.options.scale = Renderer.zoomMultiplier ** level;
-    const bottomRightAfter = new planck.Vec2(this.canvas.clientWidth / this.options.scale, this.canvas.clientHeight / this.options.scale);
+    const bottomRightAfter = new planck.Vec2(
+      this.canvas.clientWidth / this.options.scale,
+      this.canvas.clientHeight / this.options.scale
+    );
 
-    this.offset.add(bottomRightAfter.sub(bottomRightBefore).mul(1/2))
+    this.offset.add(bottomRightAfter.sub(bottomRightBefore).mul(1 / 2));
   }
 
   renderWorld() {

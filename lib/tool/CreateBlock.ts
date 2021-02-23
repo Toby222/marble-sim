@@ -2,8 +2,9 @@ import { BaseTool } from "./BaseTool";
 import planck from "planck-js";
 import { Util } from "../Util";
 
-class CreateBlock extends BaseTool {
+export class CreateBlock extends BaseTool {
   readonly toolName = "Create Block";
+  static readonly instance = new CreateBlock();
 
   private static gradient: CanvasGradient;
   click(event: MouseEvent, world: planck.World, canvas: HTMLCanvasElement) {
@@ -38,7 +39,3 @@ class CreateBlock extends BaseTool {
     });
   }
 }
-
-const instance = new CreateBlock();
-Object.freeze(instance);
-export default instance;

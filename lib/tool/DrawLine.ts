@@ -2,8 +2,10 @@ import { BaseTool } from "./BaseTool";
 import planck from "planck-js";
 import { Util } from "../Util";
 
-class DrawLine extends BaseTool {
+export class DrawLine extends BaseTool {
   readonly toolName = "Draw Line";
+  static readonly instance = new DrawLine();
+
   private static startPos: planck.Vec2 | null = null;
 
   private static body: planck.Body;
@@ -49,7 +51,3 @@ class DrawLine extends BaseTool {
     );
   }
 }
-
-const instance = new DrawLine();
-Object.freeze(instance);
-export default instance;
