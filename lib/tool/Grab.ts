@@ -15,6 +15,7 @@ export class Grab extends BaseTool {
     const mousePos = Util.getCursorPositionInCanvas(canvas, ev, true);
     Util.findBody(world, mousePos, (clickedBody) => {
       if (clickedBody === null) return;
+      clickedBody.setFixedRotation(true);
 
       if (Grab.mouseJoint !== null) {
         world.destroyJoint(Grab.mouseJoint);
@@ -40,6 +41,7 @@ export class Grab extends BaseTool {
 
   mouseup(_ev: MouseEvent, world: planck.World, _canvas: HTMLCanvasElement) {
     if (Grab.mouseJoint === null) return;
+    Grab.mouseJoint.getBodyB().setFixedRotation(false);
     world.destroyJoint(Grab.mouseJoint);
     Grab.mouseJoint = null;
   }
