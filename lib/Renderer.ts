@@ -197,6 +197,7 @@ export class Renderer {
     ctx.beginPath();
     ctx.arc(0, 0, radius, 0, 2 * Math.PI);
     if (!this.options.wireframe) ctx.fill();
+    else ctx.lineTo(0, 0);
     ctx.stroke();
 
     ctx.restore();
