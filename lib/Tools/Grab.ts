@@ -13,7 +13,8 @@ export class Grab extends BaseTool {
       Grab.mouseGround = world.createBody();
     }
     const mousePos = Util.getCursorPositionInCanvas(canvas, ev, true);
-    Util.findBody(world, mousePos, (clickedBody) => {
+    const clickedBody = Util.findBody(world, mousePos)
+
       if (clickedBody === null) return;
       clickedBody.setFixedRotation(true);
 
@@ -30,7 +31,6 @@ export class Grab extends BaseTool {
           mousePos
         )
       );
-    });
   }
 
   mousemove(ev: MouseEvent, _world: planck.World, canvas: HTMLCanvasElement) {
