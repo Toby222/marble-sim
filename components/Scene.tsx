@@ -21,9 +21,10 @@ interface UserData {
 export class Scene extends React.Component<Props, State> {
   canvas: React.RefObject<HTMLCanvasElement>;
   toolbar: React.RefObject<HTMLDivElement>;
-  infoSpan: React.RefObject<HTMLSpanElement>;
 
-  world?: planck.World;
+  world: planck.World;
+  uiBody: planck.Body;
+
   renderer?: Renderer;
   runner?: Runner;
 
@@ -34,13 +35,22 @@ export class Scene extends React.Component<Props, State> {
       // allowSleep: false,
     });
 
+    this.uiBody = this.world.createBody({
+      active: false,
+      fixedRotation: true,
+      gravityScale: 0,
+      type: "static",
+      userData: {
+        isUI: true,
+      },
+    });
+
     this.state = {
       tool: Util.tools[0],
     };
 
     this.canvas = React.createRef();
     this.toolbar = React.createRef();
-    this.infoSpan = React.createRef();
 
     Util.globals.scene = this;
   }
@@ -51,7 +61,6 @@ export class Scene extends React.Component<Props, State> {
 
     delete this.renderer;
     delete this.runner;
-    delete this.world;
   }
 
   componentDidMount() {
@@ -77,9 +86,32 @@ export class Scene extends React.Component<Props, State> {
     this.handleResize();
 
     this.renderer = new Renderer(this.world, context, {
+      fillStyle: {
+        dynamic: "black",
+        kinematic: "gray",
+        static: "white",
+        text: "20px Sans-Serif",
+      },
       scale: 1,
       wireframe: false,
     });
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const thisScene = this;
+    this.renderer.draw = function (_ctx: CanvasRenderingContext2D) {
+      const fpsInfo = `FPS: ${Math.round(thisScene.runner?.fps ?? NaN)}`;
+      const bodyInfo = `Bodies: ${this.world?.getBodyCount()}`;
+      const posInfo = `Position: [x:${-Math.round(
+        this.offset.x ?? 0
+      )}, y:${-Math.round(this.offset.y ?? 0)}]`;
+      const scaleInfo = `Scale: ${
+        Math.round((this.options.scale ?? 0) * 100) / 100
+      }`;
+      const info = [fpsInfo, bodyInfo, posInfo, scaleInfo];
+      for (let i = 0; i < info.length; i++) {
+        this.drawText(new planck.Vec2(0, 20 * (i + 1)), info[i]);
+      }
+    };
     this.runner = new Runner(this.world, { fps: 30, speed: 30 });
 
     window.addEventListener("resize", () => this.handleResize());
@@ -119,17 +151,6 @@ export class Scene extends React.Component<Props, State> {
     const render = () => {
       this.renderer?.renderWorld();
       if (!this.runner) return;
-      if (this.infoSpan.current)
-        this.infoSpan.current.innerText = `FPS: ${Math.round(this.runner.fps)
-          .toString()
-          .padStart(
-            3,
-            "0"
-          )}; Bodies: ${this.world?.getBodyCount()}; Position: [x:${-Math.round(
-          this.renderer?.offset.x ?? 0
-        )}, y:${-Math.round(this.renderer?.offset.y ?? 0)}]; Scale: ${
-          Math.round((this.renderer?.options.scale ?? 0) * 100) / 100
-        }`;
     };
 
     const update = () => {

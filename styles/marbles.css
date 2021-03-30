@@ -2,9 +2,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 50px;
+  height: 45px;
   width: calc(100vw - 10px);
-  padding: 5px;
+  padding: 5px 5px 0 5px;
 
   vertical-align: middle;
   user-select: none;

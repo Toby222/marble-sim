@@ -1,3 +1,5 @@
+import { UserData } from "./Interfaces/UserData";
+
 type drawStyle = CanvasGradient | CanvasPattern | string;
 
 interface RendererOptions {
@@ -5,13 +7,15 @@ interface RendererOptions {
   scale: number;
   fillStyle: {
     dynamic: drawStyle;
-    static: drawStyle;
     kinematic: drawStyle;
+    static: drawStyle;
+    text: drawStyle;
   };
   strokeStyle: {
     dynamic: drawStyle;
-    static: drawStyle;
     kinematic: drawStyle;
+    static: drawStyle;
+    text: drawStyle;
   };
   wireframe: boolean;
 }
@@ -54,15 +58,17 @@ export class Renderer {
     const defaultOptions: RendererOptions = {
       fillStyle: {
         dynamic: "black",
-        kinematic: "black",
-        static: "black",
+        kinematic: "gray",
+        static: "red",
+        text: "20px Sans-Serif",
       },
       lineWidth: NaN,
       scale: defaultScale,
       strokeStyle: {
         dynamic: "black",
-        kinematic: "black",
-        static: "black",
+        kinematic: "gray",
+        static: "red",
+        text: "20px Sans-Serif",
       },
       wireframe: true,
     };
@@ -103,7 +109,14 @@ export class Renderer {
 
     this.draw?.(ctx);
 
+    let _offset = new planck.Vec2();
+    const _scale = this.options.scale;
     for (let body = this.world.getBodyList(); body; body = body.getNext()) {
+      if ((body.getUserData() as UserData)?.isUI) {
+        _offset = this.offset;
+        this.options.scale = 1;
+        this.offset = new planck.Vec2();
+      }
       for (
         let fixture = body.getFixtureList();
         fixture;
@@ -154,6 +167,10 @@ export class Renderer {
         }
 
         ctx.restore();
+      }
+      if ((body.getUserData() as UserData)?.isUI) {
+        this.offset = _offset;
+        this.options.scale = _scale;
       }
     }
 
@@ -292,5 +309,19 @@ export class Renderer {
 
     if (!this.options.wireframe) ctx.fill();
     ctx.stroke();
+  }
+
+  drawText(pos: planck.Vec2, text: string) {
+    const ctx = this.ctx;
+
+    if (this.options.wireframe) {
+      ctx.font = this.options.strokeStyle.text.toString();
+      ctx.strokeStyle = this.options.strokeStyle.static.toString();
+      ctx.strokeText(text, pos.x, pos.y);
+    } else {
+      ctx.font = this.options.fillStyle.text.toString();
+      ctx.fillStyle = this.options.fillStyle.static.toString();
+      ctx.fillText(text, pos.x, pos.y);
+    }
   }
 }

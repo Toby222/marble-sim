@@ -15,8 +15,6 @@ export class ToolBar extends React.Component<Props> {
     return (
       <>
         <div id="toolbar" ref={scene.toolbar}>
-          <span ref={scene.infoSpan} />
-          {ToolBar.divider}
           <ToolSelection
             onSelected={(tool: AnyTool) => scene.setState({ tool })}
           />
