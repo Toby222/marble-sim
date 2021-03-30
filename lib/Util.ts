@@ -1,4 +1,4 @@
-import planck from "planck-js";
+import * as planck from "planck-js";
 import { AnyTool } from "./tool/BaseTool";
 
 import { DragCamera } from "./tool/DragCamera";
@@ -49,11 +49,10 @@ export namespace Util {
     point: planck.Vec2,
     callback: (body: planck.Body | null) => unknown
   ) {
-    const body: planck.Body | null = null;
     const aabb = planck.AABB(point, point);
 
     const queryCallback = (fixture: planck.Fixture) => {
-      if (body || !fixture.getBody().isDynamic() || !fixture.testPoint(point)) {
+      if (!fixture.getBody().isDynamic() || !fixture.testPoint(point)) {
         callback(null);
         return false;
       }

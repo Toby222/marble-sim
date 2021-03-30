@@ -1,6 +1,6 @@
 import React from "react";
 
-import planck from "planck-js";
+import * as planck from "planck-js";
 import { Renderer } from "../lib/Renderer";
 import { Runner } from "../lib/Runner";
 

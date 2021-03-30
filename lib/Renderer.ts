@@ -20,7 +20,7 @@ interface RendererOptions {
   wireframe: boolean;
 }
 
-import planck from "planck-js";
+import * as planck from "planck-js";
 declare module "planck-js" {
   export interface Body {
     render?: {

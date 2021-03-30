@@ -1,5 +1,5 @@
 import { BaseTool } from "./BaseTool";
-import planck from "planck-js";
+import * as planck from "planck-js";
 import { Util } from "../Util";
 
 export class CreateBlock extends BaseTool {
