@@ -1,5 +1,5 @@
 import React, { FormEvent } from "react";
-import { AnyTool } from "../lib/tool/BaseTool";
+import { AnyTool } from "../lib/Tools/BaseTool";
 import { Scene } from "./Scene";
 import { ToolSelection } from "./ToolSelection";
 
@@ -15,8 +15,6 @@ export class ToolBar extends React.Component<Props> {
     return (
       <>
         <div id="toolbar" ref={scene.toolbar}>
-          <span ref={scene.infoSpan} />
-          {ToolBar.divider}
           <ToolSelection
             onSelected={(tool: AnyTool) => scene.setState({ tool })}
           />

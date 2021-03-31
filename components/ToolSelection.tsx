@@ -1,5 +1,5 @@
 import React from "react";
-import { AnyTool } from "../lib/tool/BaseTool";
+import { AnyTool } from "../lib/Tools/BaseTool";
 import { Util } from "../lib/Util";
 
 interface Props {

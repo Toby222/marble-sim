@@ -1,5 +1,5 @@
 import { BaseTool } from "./BaseTool";
-import planck from "planck-js";
+import * as planck from "planck-js";
 import Util from "../Util";
 export class Grab extends BaseTool {
   readonly toolName = "Grab";
@@ -13,23 +13,24 @@ export class Grab extends BaseTool {
       Grab.mouseGround = world.createBody();
     }
     const mousePos = Util.getCursorPositionInCanvas(canvas, ev, true);
-    Util.findBody(world, mousePos, (clickedBody) => {
-      if (clickedBody === null) return;
+    const clickedBody = Util.findBody(world, mousePos);
 
-      if (Grab.mouseJoint !== null) {
-        world.destroyJoint(Grab.mouseJoint);
-        Grab.mouseJoint = null;
-      }
+    if (clickedBody === null) return;
+    clickedBody.setFixedRotation(true);
 
-      Grab.mouseJoint = world.createJoint(
-        new planck.MouseJoint(
-          { dampingRatio: 0, maxForce: 1e100 },
-          Grab.mouseGround,
-          clickedBody,
-          mousePos
-        )
-      );
-    });
+    if (Grab.mouseJoint !== null) {
+      world.destroyJoint(Grab.mouseJoint);
+      Grab.mouseJoint = null;
+    }
+
+    Grab.mouseJoint = world.createJoint(
+      new planck.MouseJoint(
+        { dampingRatio: 0, maxForce: 1e100 },
+        Grab.mouseGround,
+        clickedBody,
+        mousePos
+      )
+    );
   }
 
   mousemove(ev: MouseEvent, _world: planck.World, canvas: HTMLCanvasElement) {
@@ -40,6 +41,7 @@ export class Grab extends BaseTool {
 
   mouseup(_ev: MouseEvent, world: planck.World, _canvas: HTMLCanvasElement) {
     if (Grab.mouseJoint === null) return;
+    Grab.mouseJoint.getBodyB().setFixedRotation(false);
     world.destroyJoint(Grab.mouseJoint);
     Grab.mouseJoint = null;
   }

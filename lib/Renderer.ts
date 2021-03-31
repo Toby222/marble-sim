@@ -1,3 +1,6 @@
+import { UserData } from "./Interfaces/UserData";
+import { UIShape } from "./UI/UIShape";
+
 type drawStyle = CanvasGradient | CanvasPattern | string;
 
 interface RendererOptions {
@@ -5,8 +8,8 @@ interface RendererOptions {
   scale: number;
   fillStyle: {
     dynamic: drawStyle;
-    static: drawStyle;
     kinematic: drawStyle;
+    static: drawStyle;
   };
   strokeStyle: {
     dynamic: drawStyle;
@@ -16,12 +19,10 @@ interface RendererOptions {
   wireframe: boolean;
 }
 
-import planck from "planck-js";
+import * as planck from "planck-js";
 declare module "planck-js" {
   export interface Body {
     render?: {
-      stroke?: drawStyle;
-      fill?: drawStyle;
       /** @returns wether or not to use default rendering after call */
       custom?: (
         ctx: CanvasRenderingContext2D,
@@ -31,7 +32,10 @@ declare module "planck-js" {
           height: number;
         }
       ) => boolean | undefined;
+      fill?: drawStyle;
       hidden?: boolean;
+      stroke?: drawStyle;
+      text?: drawStyle;
     };
   }
 }
@@ -54,15 +58,15 @@ export class Renderer {
     const defaultOptions: RendererOptions = {
       fillStyle: {
         dynamic: "black",
-        kinematic: "black",
-        static: "black",
+        kinematic: "gray",
+        static: "red",
       },
       lineWidth: NaN,
       scale: defaultScale,
       strokeStyle: {
         dynamic: "black",
-        kinematic: "black",
-        static: "black",
+        kinematic: "gray",
+        static: "red",
       },
       wireframe: true,
     };
@@ -74,6 +78,7 @@ export class Renderer {
 
     this.world = world;
     this.ctx = ctx;
+    ctx.textBaseline = "top";
     this.canvas = ctx.canvas;
 
     this.draw = undefined;
@@ -103,7 +108,14 @@ export class Renderer {
 
     this.draw?.(ctx);
 
+    let _offset = new planck.Vec2();
+    const _scale = this.options.scale;
     for (let body = this.world.getBodyList(); body; body = body.getNext()) {
+      if ((body.getUserData() as UserData)?.isUI) {
+        _offset = this.offset;
+        this.options.scale = 1;
+        this.offset = new planck.Vec2();
+      }
       for (
         let fixture = body.getFixtureList();
         fixture;
@@ -123,12 +135,16 @@ export class Renderer {
           ctx.strokeStyle = options.strokeStyle.static;
           ctx.fillStyle = options.fillStyle.static;
         }
+        ctx.font = getComputedStyle(canvas).font;
 
         if (body.render?.stroke !== undefined) {
           ctx.strokeStyle = body.render.stroke;
         }
         if (body.render?.fill !== undefined) {
           ctx.fillStyle = body.render.fill;
+        }
+        if (body.render?.text !== undefined) {
+          ctx.font = body.render.text.toString();
         }
 
         const type = fixture.getType();
@@ -151,9 +167,16 @@ export class Renderer {
           case "chain":
             this.drawPolygon(body, shape as planck.Chain);
             break;
+          case "ui":
+            this.drawUI(body, shape as UIShape);
+            break;
         }
 
         ctx.restore();
+      }
+      if ((body.getUserData() as UserData)?.isUI) {
+        this.offset = _offset;
+        this.options.scale = _scale;
       }
     }
 
@@ -197,6 +220,7 @@ export class Renderer {
     ctx.beginPath();
     ctx.arc(0, 0, radius, 0, 2 * Math.PI);
     if (!this.options.wireframe) ctx.fill();
+    else ctx.lineTo(0, 0);
     ctx.stroke();
 
     ctx.restore();
@@ -279,6 +303,10 @@ export class Renderer {
     ctx.stroke();
   }
 
+  drawUI(body: planck.Body, shape: UIShape) {
+    shape.render(this);
+  }
+
   drawJoint(joint: planck.Joint) {
     const ctx = this.ctx;
 
@@ -291,5 +319,15 @@ export class Renderer {
 
     if (!this.options.wireframe) ctx.fill();
     ctx.stroke();
+  }
+
+  drawText(pos: planck.Vec2, text: string) {
+    const ctx = this.ctx;
+
+    if (this.options.wireframe) {
+      ctx.strokeText(text, pos.x, pos.y);
+    } else {
+      ctx.fillText(text, pos.x, pos.y);
+    }
   }
 }

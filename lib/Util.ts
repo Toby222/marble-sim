@@ -1,11 +1,11 @@
-import planck from "planck-js";
-import { AnyTool } from "./tool/BaseTool";
+import * as planck from "planck-js";
+import { AnyTool } from "./Tools/BaseTool";
 
-import { DragCamera } from "./tool/DragCamera";
-import { Grab } from "./tool/Grab";
-import { CreateMarble } from "./tool/CreateMarble";
-import { CreateBlock } from "./tool/CreateBlock";
-import { DrawLine } from "./tool/DrawLine";
+import { DragCamera } from "./Tools/DragCamera";
+import { Grab } from "./Tools/Grab";
+import { CreateMarble } from "./Tools/CreateMarble";
+import { CreateBlock } from "./Tools/CreateBlock";
+import { DrawLine } from "./Tools/DrawLine";
 
 import { Renderer } from "./Renderer";
 import { Scene } from "../components/Scene";
@@ -46,22 +46,20 @@ export namespace Util {
 
   export function findBody(
     world: planck.World,
-    point: planck.Vec2,
-    callback: (body: planck.Body | null) => unknown
-  ) {
-    const body: planck.Body | null = null;
-    const aabb = planck.AABB(point, point);
+    point: planck.Vec2
+  ): planck.Body | null {
+    let foundBody: planck.Body | null = null;
 
     const queryCallback = (fixture: planck.Fixture) => {
-      if (body || !fixture.getBody().isDynamic() || !fixture.testPoint(point)) {
-        callback(null);
+      if (fixture.getBody().isDynamic() && fixture.testPoint(point)) {
+        foundBody = fixture.getBody();
         return false;
       }
-      callback(fixture.getBody());
       return true;
     };
 
-    world.queryAABB(aabb, queryCallback);
+    world.queryAABB(new planck.AABB(point, point), queryCallback);
+    return foundBody;
   }
 }
 export default Util;
