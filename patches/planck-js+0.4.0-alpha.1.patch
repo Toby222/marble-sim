@@ -1,0 +1,13 @@
+diff --git a/node_modules/planck-js/lib/shape/index.d.ts b/node_modules/planck-js/lib/shape/index.d.ts
+index ea92957..2ca6e06 100644
+--- a/node_modules/planck-js/lib/shape/index.d.ts
++++ b/node_modules/planck-js/lib/shape/index.d.ts
+@@ -3,7 +3,7 @@ import { RayCastInput, RayCastOutput, DistanceProxy, AABB } from "../collision";
+ import { MassData } from "../";
+ 
+ // Types
+-export type ShapeType = "circle" | "edge" | "polygon" | "chain";
++export type ShapeType = string;
+ 
+ export interface Shape {
+   /** @internal */ m_type: ShapeType;

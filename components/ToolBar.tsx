@@ -1,5 +1,5 @@
 import React, { FormEvent } from "react";
-import { AnyTool } from "../lib/tool/BaseTool";
+import { AnyTool } from "../lib/Tools/BaseTool";
 import { Scene } from "./Scene";
 import { ToolSelection } from "./ToolSelection";
 
