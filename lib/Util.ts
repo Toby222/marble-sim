@@ -51,11 +51,10 @@ export namespace Util {
     let foundBody: planck.Body | null = null;
 
     const queryCallback = (fixture: planck.Fixture) => {
-      if (!fixture.getBody().isDynamic() || !fixture.testPoint(point)) {
-        foundBody = null;
+      if (fixture.getBody().isDynamic() && fixture.testPoint(point)) {
+        foundBody = fixture.getBody();
         return false;
       }
-      foundBody = fixture.getBody();
       return true;
     };
 
