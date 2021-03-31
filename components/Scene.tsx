@@ -5,7 +5,7 @@ import { Renderer } from "../lib/Renderer";
 import { Runner } from "../lib/Runner";
 
 import { Util } from "../lib/Util";
-import { AnyTool } from "../lib/tool/BaseTool";
+import { AnyTool } from "../lib/Tools/BaseTool";
 import { ToolBar } from "./ToolBar";
 
 type Props = Record<string, never>;
