@@ -23,6 +23,7 @@
   position: absolute;
   top: 50px;
   left: 0;
+  font: 1.2rem monospace;
 
   background: hsl(235, 22%, 30%);
 }

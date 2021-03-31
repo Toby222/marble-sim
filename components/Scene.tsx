@@ -4,6 +4,7 @@ import * as planck from "planck-js";
 import { Renderer } from "../lib/Renderer";
 import { Runner } from "../lib/Runner";
 
+import { Label } from "../lib/UI/Label";
 import { Util } from "../lib/Util";
 import { AnyTool } from "../lib/Tools/BaseTool";
 import { ToolBar } from "./ToolBar";
@@ -90,7 +91,6 @@ export class Scene extends React.Component<Props, State> {
         dynamic: "black",
         kinematic: "gray",
         static: "white",
-        text: "20px Sans-Serif",
       },
       scale: 1,
       wireframe: false,
@@ -98,6 +98,9 @@ export class Scene extends React.Component<Props, State> {
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisScene = this;
+    const infoView = this.uiBody.createFixture({
+      shape: new Label(new planck.Vec2(), "Loading..."),
+    });
     this.renderer.draw = function (_ctx: CanvasRenderingContext2D) {
       const fpsInfo = `FPS: ${Math.round(thisScene.runner?.fps ?? NaN)}`;
       const bodyInfo = `Bodies: ${this.world?.getBodyCount()}`;
@@ -108,9 +111,7 @@ export class Scene extends React.Component<Props, State> {
         Math.round((this.options.scale ?? 0) * 100) / 100
       }`;
       const info = [fpsInfo, bodyInfo, posInfo, scaleInfo];
-      for (let i = 0; i < info.length; i++) {
-        this.drawText(new planck.Vec2(0, 20 * (i + 1)), info[i]);
-      }
+      (infoView.getShape() as Label).text = info.join("\n");
     };
     this.runner = new Runner(this.world, { fps: 30, speed: 30 });
 

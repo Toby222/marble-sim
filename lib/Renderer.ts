@@ -1,4 +1,5 @@
 import { UserData } from "./Interfaces/UserData";
+import { UIShape } from "./UI/UIShape";
 
 type drawStyle = CanvasGradient | CanvasPattern | string;
 
@@ -7,15 +8,13 @@ interface RendererOptions {
   scale: number;
   fillStyle: {
     dynamic: drawStyle;
-    kinematic: drawStyle;
+    kinematic: drawStyle
     static: drawStyle;
-    text: drawStyle;
   };
   strokeStyle: {
     dynamic: drawStyle;
-    kinematic: drawStyle;
     static: drawStyle;
-    text: drawStyle;
+    kinematic: drawStyle;
   };
   wireframe: boolean;
 }
@@ -24,8 +23,6 @@ import * as planck from "planck-js";
 declare module "planck-js" {
   export interface Body {
     render?: {
-      stroke?: drawStyle;
-      fill?: drawStyle;
       /** @returns wether or not to use default rendering after call */
       custom?: (
         ctx: CanvasRenderingContext2D,
@@ -35,7 +32,10 @@ declare module "planck-js" {
           height: number;
         }
       ) => boolean | undefined;
+      fill?: drawStyle;
       hidden?: boolean;
+      stroke?: drawStyle;
+      text?: drawStyle;
     };
   }
 }
@@ -60,7 +60,6 @@ export class Renderer {
         dynamic: "black",
         kinematic: "gray",
         static: "red",
-        text: "20px Sans-Serif",
       },
       lineWidth: NaN,
       scale: defaultScale,
@@ -68,7 +67,6 @@ export class Renderer {
         dynamic: "black",
         kinematic: "gray",
         static: "red",
-        text: "20px Sans-Serif",
       },
       wireframe: true,
     };
@@ -80,6 +78,7 @@ export class Renderer {
 
     this.world = world;
     this.ctx = ctx;
+    ctx.textBaseline = "top"
     this.canvas = ctx.canvas;
 
     this.draw = undefined;
@@ -136,12 +135,16 @@ export class Renderer {
           ctx.strokeStyle = options.strokeStyle.static;
           ctx.fillStyle = options.fillStyle.static;
         }
+        ctx.font = getComputedStyle(canvas).font;
 
         if (body.render?.stroke !== undefined) {
           ctx.strokeStyle = body.render.stroke;
         }
         if (body.render?.fill !== undefined) {
           ctx.fillStyle = body.render.fill;
+        }
+        if (body.render?.text !== undefined) {
+          ctx.font = body.render.text.toString();
         }
 
         const type = fixture.getType();
@@ -163,6 +166,9 @@ export class Renderer {
             break;
           case "chain":
             this.drawPolygon(body, shape as planck.Chain);
+            break;
+          case "ui":
+            this.drawUI(body, shape as UIShape);
             break;
         }
 
@@ -297,6 +303,10 @@ export class Renderer {
     ctx.stroke();
   }
 
+  drawUI(body: planck.Body, shape: UIShape) {
+    shape.render(this);
+  }
+
   drawJoint(joint: planck.Joint) {
     const ctx = this.ctx;
 
@@ -315,12 +325,8 @@ export class Renderer {
     const ctx = this.ctx;
 
     if (this.options.wireframe) {
-      ctx.font = this.options.strokeStyle.text.toString();
-      ctx.strokeStyle = this.options.strokeStyle.static.toString();
       ctx.strokeText(text, pos.x, pos.y);
     } else {
-      ctx.font = this.options.fillStyle.text.toString();
-      ctx.fillStyle = this.options.fillStyle.static.toString();
       ctx.fillText(text, pos.x, pos.y);
     }
   }
