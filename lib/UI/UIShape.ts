@@ -12,6 +12,6 @@ export abstract class UIShape extends planck.Edge {
   }
   pos: planck.Vec2;
 
-  abstract render(renderer: Renderer): void
+  abstract render(renderer: Renderer): void;
 }
 UIShape.TYPE = "ui";

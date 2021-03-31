@@ -8,7 +8,7 @@ interface RendererOptions {
   scale: number;
   fillStyle: {
     dynamic: drawStyle;
-    kinematic: drawStyle
+    kinematic: drawStyle;
     static: drawStyle;
   };
   strokeStyle: {
@@ -78,7 +78,7 @@ export class Renderer {
 
     this.world = world;
     this.ctx = ctx;
-    ctx.textBaseline = "top"
+    ctx.textBaseline = "top";
     this.canvas = ctx.canvas;
 
     this.draw = undefined;

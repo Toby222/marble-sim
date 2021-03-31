@@ -12,9 +12,9 @@ export class Label extends UIShape {
   }
 
   render(renderer: Renderer) {
-    const lines = this.text.split("\n")
-    const lineHeight = parseFloat(getComputedStyle(renderer.canvas).fontSize)
-    for(let i = 0, line = lines[i]; i < lines.length; line = lines[++i])
-      renderer.drawText(new planck.Vec2(0, lineHeight*i).add(this.pos), line)
+    const lines = this.text.split("\n");
+    const lineHeight = parseFloat(getComputedStyle(renderer.canvas).fontSize);
+    for (let i = 0, line = lines[i]; i < lines.length; line = lines[++i])
+      renderer.drawText(new planck.Vec2(0, lineHeight * i).add(this.pos), line);
   }
 }
