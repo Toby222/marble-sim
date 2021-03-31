@@ -10,6 +10,8 @@
   user-select: none;
 
   background: hsl(235, 22%, 80%);
+
+  font-family: system-ui;
 }
 #toolbar input {
   vertical-align: middle;
